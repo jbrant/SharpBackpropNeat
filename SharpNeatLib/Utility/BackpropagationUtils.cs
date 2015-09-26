@@ -10,8 +10,22 @@ using SharpNeat.Phenomes.NeuralNets;
 
 namespace SharpNeat.Utility
 {
+    /// <summary>
+    ///     Contains utility methods for traditional backpropagation calculations (node errors, weight updates, and overall
+    ///     network error).
+    /// </summary>
     public static class BackpropagationUtils
     {
+        /// <summary>
+        ///     Calculates the output error for each node in the target layer and all hidden layers.  Note that this is a wrapper
+        ///     method which takes a signal array, converts it to a double array, and passes that on to the method below.
+        /// </summary>
+        /// <param name="layers">The discrete layers in the ANN.</param>
+        /// <param name="connections">Array of all connections in the ANN.</param>
+        /// <param name="nodeActivationValues">The neuron activation values resulting from the last forward pass.</param>
+        /// <param name="targetValues">The target values against which the network is being trained.</param>
+        /// <param name="nodeActivationFunctions">The activation function for each neuron (this will only differ with HyperNEAT).</param>
+        /// <returns>The errors for each output and hidden neuron.</returns>
         public static double[] CalculateErrorSignals(LayerInfo[] layers, FastConnection[] connections,
             double[] nodeActivationValues, ISignalArray targetValues, IActivationFunction[] nodeActivationFunctions)
         {
@@ -24,6 +38,15 @@ namespace SharpNeat.Utility
             return CalculateErrorSignals(layers, connections, nodeActivationValues, targets, nodeActivationFunctions);
         }
 
+        /// <summary>
+        ///     Calculates the output error for each node in the target layer and all hidden layers.
+        /// </summary>
+        /// <param name="layers">The discrete layers in the ANN.</param>
+        /// <param name="connections">Array of all connections in the ANN.</param>
+        /// <param name="nodeActivationValues">The neuron activation values resulting from the last forward pass.</param>
+        /// <param name="targetValues">The target values against which the network is being trained.</param>
+        /// <param name="nodeActivationFunctions">The activation function for each neuron (this will only differ with HyperNEAT).</param>
+        /// <returns>The errors for each output and hidden neuron.</returns>
         public static double[] CalculateErrorSignals(LayerInfo[] layers, FastConnection[] connections,
             double[] nodeActivationValues, double[] targetValues, IActivationFunction[] nodeActivationFunctions)
         {
@@ -81,6 +104,15 @@ namespace SharpNeat.Utility
             return signalErrors;
         }
 
+        /// <summary>
+        ///     Updates weights based on node error calculations using a given learning rate (momentum isn't taken into
+        ///     consideration here).
+        /// </summary>
+        /// <param name="layers">The discrete layers in the ANN.</param>
+        /// <param name="connections">Array of all connections in the ANN.</param>
+        /// <param name="learningRate">The learning rate for all connections.</param>
+        /// <param name="signalErrors">The errors for each output and hidden neuron.</param>
+        /// <param name="nodeActivationValues">The activation function for each neuron (this will only differ with HyperNEAT).</param>
         public static void BackpropagateError(LayerInfo[] layers, FastConnection[] connections, double learningRate,
             double[] signalErrors, double[] nodeActivationValues)
         {
@@ -104,11 +136,17 @@ namespace SharpNeat.Utility
             }
         }
 
+        /// <summary>
+        ///     Calculates the overall network error based on the errors of the output and hidden nodes.  This is essentially doing
+        ///     a residual sum of squares calculation (RSS).
+        /// </summary>
+        /// <param name="signalErrors">The errors for each output and hidden neuron.</param>
+        /// <returns>The overall error (RSS) of the network.</returns>
         public static double CalculateOverallError(double[] signalErrors)
         {
             double totalError = signalErrors.Sum(signalError => Math.Pow(signalError, 2));
 
-            return totalError/2;
+            return totalError/signalErrors.Length;
         }
     }
 }
