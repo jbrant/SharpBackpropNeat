@@ -83,6 +83,11 @@ namespace SharpNeat.Network
             return (float)Math.Sin(2f * x);
         }
 
+        public double CalculateDerivative(double x)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// For activation functions that accept auxiliary arguments; generates random initial values for aux arguments for newly
         /// added nodes (from an 'add neuron' mutation).

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <ActivationFunctions>
+    <Fn id="0" name="PlainSigmoid" prob="1" />
+  </ActivationFunctions>
+  <Networks>
+    <Network id="15827" birthGen="38" fitness="10">
+      <Nodes>
+        <Node type="bias" id="0" />
+        <Node type="in" id="1" />
+        <Node type="in" id="2" />
+        <Node type="in" id="3" />
+        <Node type="out" id="4" />
+        <Node type="hid" id="5" />
+        <Node type="hid" id="6" />
+      </Nodes>
+      <Connections>
+        <Con id="1" src="1" tgt="5" wght="0.2" />
+        <Con id="2" src="1" tgt="6" wght="-0.3" />
+        <Con id="3" src="2" tgt="5" wght="0.4" />
+        <Con id="4" src="2" tgt="6" wght="0.1" />
+        <Con id="5" src="3" tgt="5" wght="-0.5" />
+        <Con id="6" src="3" tgt="6" wght="0.2" />
+        <Con id="7" src="5" tgt="4" wght="-0.3" />
+        <Con id="8" src="6" tgt="4" wght="-0.2" />
+      </Connections>
+    </Network>
+  </Networks>
+</Root>

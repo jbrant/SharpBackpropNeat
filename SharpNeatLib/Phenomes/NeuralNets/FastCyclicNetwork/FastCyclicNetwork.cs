@@ -190,6 +190,16 @@ namespace SharpNeat.Phenomes.NeuralNets
             }
         }
 
+        public double CalculateError(double[] targets, double learningRate)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public double CalculateError(double learningRate)
+        {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Reset the network's internal state.
         /// </summary>

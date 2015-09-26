@@ -199,6 +199,7 @@
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="EvolvedAutoencoder\" />
     <Folder Include="MazeNavigation\MCNSExperiment\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

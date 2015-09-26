@@ -84,6 +84,11 @@ namespace SharpNeat.Network
             return (float)Math.Exp(-Math.Pow(x * 2.5f, 2.0));
         }
 
+        public double CalculateDerivative(double x)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// For activation functions that accept auxiliary arguments; generates random initial values for aux arguments for newly
         /// added nodes (from an 'add neuron' mutation).

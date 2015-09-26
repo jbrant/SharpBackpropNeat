@@ -17,6 +17,7 @@
  * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using SharpNeat.Utility;
 namespace SharpNeat.Network
 {
@@ -109,6 +110,11 @@ namespace SharpNeat.Network
                 return One - ((x - One) * (x - One) * Half);
             }
             return One;
+        }
+
+        public double CalculateDerivative(double x)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
