@@ -215,7 +215,8 @@ namespace SharpNeat.Phenomes.NeuralNets
         /// <summary>
         ///     Calculates the network error given some real-valued targets using back-propagation.
         /// </summary>
-        /// <param name="target">The target values against which to calculate the error.</param>
+        /// <param name="targets">The target values against which to calculate the error.</param>
+        /// <param name="learningRate">The learning rate parameter to control convergence speed.</param>
         /// <returns>The overall error of the network.</returns>
         public double CalculateError(double[] targets, double learningRate)
         {
