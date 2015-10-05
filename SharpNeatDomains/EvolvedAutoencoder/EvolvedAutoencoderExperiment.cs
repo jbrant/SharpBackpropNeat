@@ -21,6 +21,59 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 {
     public class EvolvedAutoencoderExperiment : IGuiNeatExperiment
     {
+        #region Private instance variables
+
+        private NetworkActivationScheme _activationScheme;
+        private string _complexityRegulationStr;
+        private int? _complexityThreshold;
+        private string _generationalLogFile;
+        private ParallelOptions _parallelOptions;
+        private string _trainingImagesFilename;
+        private int _numImageSamples;
+        private double _learningRate;
+
+        #endregion
+
+        #region Experiment Properties
+
+        /// <summary>
+        ///     The name of the experiment.
+        /// </summary>
+        public string Name { get; protected set; }
+
+        /// <summary>
+        ///     The description of the experiment.
+        /// </summary>
+        public string Description { get; protected set; }
+
+        /// <summary>
+        ///     The number of inputs to the neural network.
+        /// </summary>
+        public int InputCount { get; protected set; }
+
+        /// <summary>
+        ///     The number of outputs from the neural network (for an autoencoder, this should obviously match the number of
+        ///     inputs).
+        /// </summary>
+        public int OutputCount { get; protected set; }
+
+        /// <summary>
+        ///     The size of the population.
+        /// </summary>
+        public int DefaultPopulationSize { get; protected set; }
+
+        /// <summary>
+        ///     The set of parameters with which to run the NEAT algorithm.
+        /// </summary>
+        public NeatEvolutionAlgorithmParameters NeatEvolutionAlgorithmParameters { get; protected set; }
+
+        /// <summary>
+        ///     The set of parameters controlling the specifics of genome evolution.
+        /// </summary>
+        public NeatGenomeParameters NeatGenomeParameters { get; protected set; }
+
+        #endregion
+
         #region Experiment public methods
 
         /// <summary>
@@ -30,23 +83,32 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         /// <param name="xmlConfig">The reference to the top-level configuration element for the experiment.</param>
         public void Initialize(string name, XmlElement xmlConfig)
         {
+            // Read in boiler plate configuration settings
             Name = name;
             Description = XmlUtils.TryGetValueAsString(xmlConfig, "Description");
             DefaultPopulationSize = XmlUtils.GetValueAsInt(xmlConfig, "PopulationSize");
             InputCount = OutputCount = XmlUtils.GetValueAsInt(xmlConfig, "AutoencoderSize");
 
+            // Read in algorithm/logging configuration
             _activationScheme = ExperimentUtils.CreateActivationScheme(xmlConfig, "Activation");
             _complexityRegulationStr = XmlUtils.TryGetValueAsString(xmlConfig, "ComplexityRegulationStrategy");
             _complexityThreshold = XmlUtils.TryGetValueAsInt(xmlConfig, "ComplexityThreshold");
             _parallelOptions = ExperimentUtils.ReadParallelOptions(xmlConfig);
             _generationalLogFile = XmlUtils.TryGetValueAsString(xmlConfig, "GenerationalLogFile");
 
+            // Construct NEAT EA parameters
             NeatEvolutionAlgorithmParameters = new NeatEvolutionAlgorithmParameters();
             NeatEvolutionAlgorithmParameters.SpecieCount = XmlUtils.GetValueAsInt(xmlConfig, "SpecieCount");
 
+            // Construct NEAT genome parameters
             NeatGenomeParameters = new NeatGenomeParameters();
             NeatGenomeParameters.FeedforwardOnly = _activationScheme.AcyclicNetwork;
             NeatGenomeParameters.ActivationFn = PlainSigmoid.__DefaultInstance;
+
+            // Read in experiment domain-specific parameters
+            _trainingImagesFilename = XmlUtils.TryGetValueAsString(xmlConfig, "TrainingImages");
+            _numImageSamples = XmlUtils.GetValueAsInt(xmlConfig, "NumImageSamples");
+            _learningRate = XmlUtils.GetValueAsDouble(xmlConfig, "LearningRate");
         }
 
         /// <summary>
@@ -154,7 +216,8 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                     complexityRegulationStrategy, logger);
 
             // Create evalutor
-            EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator();
+            EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator(_trainingImagesFilename,
+                InputCount, _numImageSamples, _learningRate);
 
             // Create genome decoder
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = CreateGenomeDecoder();
@@ -194,56 +257,6 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         {
             return null;
         }
-
-        #endregion
-
-        #region Private instance variables
-
-        private NetworkActivationScheme _activationScheme;
-        private string _complexityRegulationStr;
-        private int? _complexityThreshold;
-        private string _generationalLogFile;
-        private ParallelOptions _parallelOptions;
-
-        #endregion
-
-        #region Experiment Properties
-
-        /// <summary>
-        ///     The name of the experiment.
-        /// </summary>
-        public string Name { get; protected set; }
-
-        /// <summary>
-        ///     The description of the experiment.
-        /// </summary>
-        public string Description { get; protected set; }
-
-        /// <summary>
-        ///     The number of inputs to the neural network.
-        /// </summary>
-        public int InputCount { get; protected set; }
-
-        /// <summary>
-        ///     The number of outputs from the neural network (for an autoencoder, this should obviously match the number of
-        ///     inputs).
-        /// </summary>
-        public int OutputCount { get; protected set; }
-
-        /// <summary>
-        ///     The size of the population.
-        /// </summary>
-        public int DefaultPopulationSize { get; protected set; }
-
-        /// <summary>
-        ///     The set of parameters with which to run the NEAT algorithm.
-        /// </summary>
-        public NeatEvolutionAlgorithmParameters NeatEvolutionAlgorithmParameters { get; protected set; }
-
-        /// <summary>
-        ///     The set of parameters controlling the specifics of genome evolution.
-        /// </summary>
-        public NeatGenomeParameters NeatGenomeParameters { get; protected set; }
 
         #endregion
     }

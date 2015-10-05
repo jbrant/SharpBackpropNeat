@@ -203,6 +203,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="EvolvedAutoencoder\ImageData\Number0Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number1Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number2Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number3Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number4Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number5Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number6Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number7Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number8Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number9Samples.data" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MazeNavigation\MCNSExperiment\" />
