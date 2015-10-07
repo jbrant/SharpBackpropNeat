@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Collections.Generic;
+using System.Linq;
 using SharpNeat.Core;
 using SharpNeat.Phenomes;
 using SharpNeat.Utility;
@@ -20,16 +21,38 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         /// <param name="imageResolution">The number of pixels constituting the resolution of the image(s).</param>
         /// <param name="numImageSamples">The number of sample training images in the given file.</param>
         /// <param name="learningRate">The learning rate for backpropagation.</param>
+        /// <param name="maxTrainingError">The target error to reach when running backpropagation.</param>
+        /// <param name="trainingSampleProportion">
+        ///     The proportion of the sample dataset to use for training (the result will be
+        ///     used as part of the validation dataset).
+        /// </param>
         public EvolvedAutoencoderEvaluator(string trainingImagesPath, int imageResolution, int numImageSamples,
-            double learningRate)
+            double learningRate, double maxTrainingError, double trainingSampleProportion)
         {
             // TODO: This could be split into training/validation sets
 
             // Read in the images on which the network will be trained
-            _trainingImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples);
+            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples);
+
+//            double[] sample1 = new[] {1.0, 0.0, 1.0, 0.0};
+//            double[] sample2 = new[] {1.0, 1.0, 0.0, 1.0};
+//            double[] sample3 = new[] { 1.0, 1.0, 1.0, 1.0 };
+//            double[] sample4 = new[] { 1.0, 1.0, 1.0, 0.0 };
+//            List<double[]> allImageSamples = new List<double[]>() { sample1, sample2, sample3, sample4 };
+
+            // Determine the ending index of the training sample
+            int trainingSampleEndIndex = (int) (allImageSamples.Count*trainingSampleProportion) - 1;
+
+            // TODO: Need a more robust sampling method
+            // Extract the training and validation sample images
+            _trainingImageSamples = allImageSamples.GetRange(0, trainingSampleEndIndex);
+            _validationImageSamples = allImageSamples.Skip(trainingSampleEndIndex + 1).ToList();
 
             // Set the learning rate
             _learningRate = learningRate;
+
+            // Set desired maximum error
+            _maxTrainingError = maxTrainingError;
         }
 
         #endregion
@@ -37,7 +60,9 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         #region Private instance fields
 
         private readonly List<double[]> _trainingImageSamples;
+        private readonly List<double[]> _validationImageSamples;
         private readonly double _learningRate;
+        private readonly double _maxTrainingError;
 
         #endregion
 
@@ -62,35 +87,58 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         {
             EvaluationCount++;
 
-            // TODO: Probably need to choose some subset of images to train on instead of just going through first dozen
+            // Evaluate on each training sample
+            foreach (double[] trainingImageSample in _trainingImageSamples)
+            {
+                double curError;
 
-            for (int sampleIdx = 0; sampleIdx < 1; sampleIdx++)
+                // Reset the network
+                phenome.ResetState();
+
+                // Load the network inputs
+                for (int pixelIdx = 0; pixelIdx < trainingImageSample.Length; pixelIdx++)
+                {
+                    phenome.InputSignalArray[pixelIdx] = trainingImageSample[pixelIdx];
+                }
+
+                // TODO: Need to add maximum number of iterations on the exit condition in order to avoid infinite loop
+                do
+                {
+                    // After inputs have been loaded, activate the network
+                    phenome.Activate();
+
+                    // Calculate the overall error based on how closely the outputs match the inputs
+                    curError = phenome.CalculateError(_learningRate);
+                } while (curError > _maxTrainingError); // Continue training until error is reduced to desired level
+            }
+
+            double errorSum = 0;
+
+            // Now we're going to validate how well the network performs on the validation set
+            foreach (double[] validationImageSample in _validationImageSamples)
             {
                 // Reset the network
                 phenome.ResetState();
 
-                // Get the current sample image
-                double[] curSample = _trainingImageSamples[sampleIdx];
-
                 // Load the network inputs
-                for (int pixelIdx = 0; pixelIdx < curSample.Length; pixelIdx++)
+                for (int pixelIdx = 0; pixelIdx < validationImageSample.Length; pixelIdx++)
                 {
-                    phenome.InputSignalArray[pixelIdx] = curSample[pixelIdx];
+                    phenome.InputSignalArray[pixelIdx] = validationImageSample[pixelIdx];
                 }
 
                 // After inputs have been loaded, activate the network
                 phenome.Activate();
 
-                double curError;
-                do
-                {
-                    curError = phenome.CalculateError(_learningRate);
-                } while (curError > 0.1);
+                // Calculate the overall error *only once* based on how closely the outputs match the inputs
+                errorSum += phenome.CalculateError(_learningRate);
             }
 
-            // TODO: After this, we present the validation set to the autoencoder and its score is stored in a FitnessInfo and returned
+            // TODO: Need a better fitness function than this
+            double fitness = 1000 - errorSum;
 
-            return new FitnessInfo(0, 0);
+            // TODO: Need to define a stop condition
+
+            return new FitnessInfo(fitness, fitness);
         }
 
         /// <summary>

@@ -31,6 +31,8 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         private string _trainingImagesFilename;
         private int _numImageSamples;
         private double _learningRate;
+        private double _backpropagationError;
+        private double _trainingSampleProportion;
 
         #endregion
 
@@ -109,6 +111,8 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             _trainingImagesFilename = XmlUtils.TryGetValueAsString(xmlConfig, "TrainingImages");
             _numImageSamples = XmlUtils.GetValueAsInt(xmlConfig, "NumImageSamples");
             _learningRate = XmlUtils.GetValueAsDouble(xmlConfig, "LearningRate");
+            _backpropagationError = XmlUtils.GetValueAsDouble(xmlConfig, "BackpropagationError");
+            _trainingSampleProportion = XmlUtils.GetValueAsDouble(xmlConfig, "TrainingSampleProportion");
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
             // Create evalutor
             EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator(_trainingImagesFilename,
-                InputCount, _numImageSamples, _learningRate);
+                InputCount, _numImageSamples, _learningRate, _backpropagationError, _trainingSampleProportion);
 
             // Create genome decoder
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = CreateGenomeDecoder();

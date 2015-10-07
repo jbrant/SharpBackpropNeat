@@ -14,10 +14,12 @@
       <ComplexityThreshold>20</ComplexityThreshold>
       <MaxDegreeOfParallelism>1</MaxDegreeOfParallelism>
       <Description></Description>
-      <AutoencoderSize>784</AutoencoderSize>
+      <AutoencoderSize>754</AutoencoderSize>
       <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>
       <NumImageSamples>1000</NumImageSamples>
       <LearningRate>0.9</LearningRate>
+      <BackpropagationError>0.001</BackpropagationError>
+      <TrainingSampleProportion>0.7</TrainingSampleProportion>
     </Config>
   </Experiment>
   
