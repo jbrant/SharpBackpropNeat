@@ -33,11 +33,11 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
             FastAcyclicNetwork network = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genome);
 
             // Set the input array
-            network.InputSignalArray[0] = 3;
-            network.InputSignalArray[1] = 8;
-            network.InputSignalArray[2] = -5;
-            network.InputSignalArray[3] = 12;
-            network.InputSignalArray[4] = 21;
+            network.InputSignalArray[0] = 1;
+            network.InputSignalArray[1] = 0;
+            network.InputSignalArray[2] = 1;
+            network.InputSignalArray[3] = 1;
+            network.InputSignalArray[4] = 1;
 
             double curError = 0.0;
             for(int count = 0; count < 10000; count++)

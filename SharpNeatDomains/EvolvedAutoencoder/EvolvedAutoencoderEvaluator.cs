@@ -32,13 +32,14 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             // TODO: This could be split into training/validation sets
 
             // Read in the images on which the network will be trained
-            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples);
+            //List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples);
+            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, 2);
 
-//            double[] sample1 = new[] {1.0, 0.0, 1.0, 0.0};
-//            double[] sample2 = new[] {1.0, 1.0, 0.0, 1.0};
-//            double[] sample3 = new[] { 1.0, 1.0, 1.0, 1.0 };
-//            double[] sample4 = new[] { 1.0, 1.0, 1.0, 0.0 };
-//            List<double[]> allImageSamples = new List<double[]>() { sample1, sample2, sample3, sample4 };
+            //            double[] sample1 = new[] {1.0, 0.0, 1.0, 0.0};
+            //            double[] sample2 = new[] {1.0, 1.0, 0.0, 1.0};
+            //            double[] sample3 = new[] { 1.0, 1.0, 1.0, 1.0 };
+            //            double[] sample4 = new[] { 1.0, 1.0, 1.0, 0.0 };
+            //            List<double[]> allImageSamples = new List<double[]>() { sample1, sample2, sample3, sample4 };
 
             // Determine the ending index of the training sample
             int trainingSampleEndIndex = (int) (allImageSamples.Count*trainingSampleProportion) - 1;
