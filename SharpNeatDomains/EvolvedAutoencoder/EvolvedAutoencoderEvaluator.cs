@@ -91,9 +91,11 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             foreach (double[] trainingImageSample in _trainingImageSamples)
             {
                 double curError;
-
+                
                 // Reset the network
                 phenome.ResetState();
+
+                // TODO: Need to normalize the inputs in [0,1] range before feeding to network
 
                 // Load the network inputs
                 for (int pixelIdx = 0; pixelIdx < trainingImageSample.Length; pixelIdx++)

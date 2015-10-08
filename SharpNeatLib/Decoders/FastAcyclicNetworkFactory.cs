@@ -86,6 +86,9 @@ namespace SharpNeat.Decoders
             // Note. 'inputAndBiasCount' holds the index of the first output node.
             Array.Copy(newIdxByDefinitionIdx, inputAndBiasCount, outputNeuronIdxArr, 0, outputCount);
 
+            // NOTE: This was added to make sure the order of the outputs match the order of the inputs (for autoencoder use case)
+            Array.Sort(outputNeuronIdxArr);
+
             // Construct arrays with additional 'per node' data/refs (activation functions, activation fn auxiliary data).
             IActivationFunctionLibrary activationFnLibrary = networkDef.ActivationFnLibrary;
             IActivationFunction[] nodeActivationFnArr = new IActivationFunction[nodeCount];

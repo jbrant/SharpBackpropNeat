@@ -65,7 +65,7 @@
   <ItemGroup>
     <Content Include="Resources\3In-2Hidden-2Out.gnm.xml" />
     <Content Include="Resources\3In-2Hidden-1Out.gnm.xml" />
-    <Content Include="Resources\5Out-2Hidden-5Out.gnm.xml" />
+    <Content Include="Resources\5Out-3Hidden-5Out.gnm.xml" />
     <Content Include="Resources\2In-2Hidden-1Out.gnm.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@
         <Con id="2" src="1" tgt="12" wght="-0.3" />
         <Con id="3" src="1" tgt="13" wght="0.5" />
 
-        <Con id="4" src="2" tgt="11" wght="0.2" />
+        <!--<Con id="4" src="2" tgt="11" wght="0.2" />-->
         <Con id="5" src="2" tgt="12" wght="0.1" />
         <Con id="6" src="2" tgt="13" wght="-0.6" />
 
@@ -47,11 +47,11 @@
         <Con id="18" src="13" tgt="6" wght="-0.6" />
 
         <Con id="19" src="11" tgt="7" wght="-0.3" />
-        <Con id="20" src="12" tgt="7" wght="-0.1" />
+        <!-- <Con id="20" src="12" tgt="7" wght="-0.1" /> -->
         <Con id="21" src="13" tgt="7" wght="0.6" />
 
         <Con id="22" src="11" tgt="8" wght="0.2" />
-        <Con id="23" src="12" tgt="8" wght="0.3" />
+        <!-- <Con id="23" src="12" tgt="8" wght="0.3" /> -->
         <Con id="24" src="13" tgt="8" wght="0.4" />
 
         <Con id="25" src="11" tgt="9" wght="-0.2" />

@@ -14,7 +14,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
     [TestClass]
     public class FastAcyclicNetworkTests
     {
-        private const string _genomeFile = "/Resources/5Out-2Hidden-5Out.gnm.xml";
+        private const string _genomeFile = "/Resources/5Out-3Hidden-5Out.gnm.xml";
         private string _inputFilePath;
 
         [TestInitialize]
@@ -33,19 +33,20 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
             FastAcyclicNetwork network = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genome);
 
             // Set the input array
-            network.InputSignalArray[0] = 1;
-            network.InputSignalArray[1] = 0;
-            network.InputSignalArray[2] = 1;
-            network.InputSignalArray[3] = 0;
-            network.InputSignalArray[4] = 1;
+            network.InputSignalArray[0] = 3;
+            network.InputSignalArray[1] = 8;
+            network.InputSignalArray[2] = -5;
+            network.InputSignalArray[3] = 12;
+            network.InputSignalArray[4] = 21;
 
-            // Activate the network
-            network.Activate();
+            double curError = 0.0;
+            for(int count = 0; count < 10000; count++)
+            {
+                // Activate the network
+                network.Activate();
 
-            Console.WriteLine(network.OutputSignalArray);
-
-            //network.CalculateError(new []{1.0, 1.0});
-            network.CalculateError(1);
+                curError = network.CalculateError(1);
+            }
         }
     }
 }

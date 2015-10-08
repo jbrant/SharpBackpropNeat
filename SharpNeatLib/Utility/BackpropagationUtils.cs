@@ -67,7 +67,7 @@ namespace SharpNeat.Utility
                     // Calculate the error for every output node with respect to its corresponding target value
                     for (; nodeIdx >= layers[layerIdx - 1]._endNodeIdx; nodeIdx--)
                     {
-                        signalErrors[nodeIdx] = (targetValues[(nodeActivationValues.Length - 1) - nodeIdx] -
+                        signalErrors[nodeIdx] = (targetValues[(targetValues.Length - 1) - ((nodeActivationValues.Length - 1) - nodeIdx)] -
                                                  nodeActivationValues[nodeIdx])*
                                                 nodeActivationFunctions[nodeIdx].CalculateDerivative(
                                                     nodeActivationValues[nodeIdx]);
