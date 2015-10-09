@@ -137,7 +137,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             }
 
             // TODO: Need a better fitness function than this
-            double fitness = 1000 - errorSum;
+            double fitness = _validationImageSamples.Count - errorSum;
 
             // TODO: Need to define a stop condition
 
