@@ -1,6 +1,8 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SharpNeat.Core;
 using SharpNeat.Phenomes;
@@ -33,7 +35,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
             // Read in the images on which the network will be trained
             //List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples);
-            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, 2);
+            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, 10, 255);
 
             //            double[] sample1 = new[] {1.0, 0.0, 1.0, 0.0};
             //            double[] sample2 = new[] {1.0, 1.0, 0.0, 1.0};
@@ -92,12 +94,11 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             foreach (double[] trainingImageSample in _trainingImageSamples)
             {
                 double curError;
+                int backpropEvals = 0;
                 
                 // Reset the network
                 phenome.ResetState();
-
-                // TODO: Need to normalize the inputs in [0,1] range before feeding to network
-
+                
                 // Load the network inputs
                 for (int pixelIdx = 0; pixelIdx < trainingImageSample.Length; pixelIdx++)
                 {
@@ -112,7 +113,9 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
                     // Calculate the overall error based on how closely the outputs match the inputs
                     curError = phenome.CalculateError(_learningRate);
-                } while (curError > _maxTrainingError); // Continue training until error is reduced to desired level
+
+                    backpropEvals++;
+                } while (curError > _maxTrainingError && backpropEvals < 100); // Continue training until error is reduced to desired level
             }
 
             double errorSum = 0;
@@ -133,11 +136,17 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                 phenome.Activate();
 
                 // Calculate the overall error *only once* based on how closely the outputs match the inputs
-                errorSum += phenome.CalculateError(_learningRate);
+                //errorSum += phenome.CalculateError(_learningRate);
+                phenome.CalculateError(_learningRate);
+
+                errorSum += calculateInputOutputDiffs(phenome.InputSignalArray, phenome.OutputSignalArray);
             }
 
             // TODO: Need a better fitness function than this
-            double fitness = _validationImageSamples.Count - errorSum;
+            //double fitness = _validationImageSamples.Count - errorSum;
+            double fitness = (_validationImageSamples.Count*phenome.InputSignalArray.Length) - errorSum;
+
+            //ImageIoUtils.WriteImage(string.Format("testImage_{0}", EvaluationCount), phenome.OutputSignalArray);
 
             // TODO: Need to define a stop condition
 
@@ -150,6 +159,24 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         /// </summary>
         public void Reset()
         {
+        }
+
+        #endregion
+
+        #region Private helper methods
+
+        private double calculateInputOutputDiffs(ISignalArray inputArray, ISignalArray outputArray)
+        {
+            Debug.Assert(inputArray.Length == outputArray.Length, "Input and output signal arrays are different lengths.");
+
+            double activationDiff = 0.0;
+
+            for (int idx = 0; idx < inputArray.Length; idx++)
+            {
+                activationDiff += Math.Abs(inputArray[idx] - outputArray[idx]);
+            }
+
+            return activationDiff;
         }
 
         #endregion

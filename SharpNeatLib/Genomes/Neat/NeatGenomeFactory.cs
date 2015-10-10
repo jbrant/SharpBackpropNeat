@@ -38,13 +38,13 @@ namespace SharpNeat.Genomes.Neat
 
         /// <summary>NeatGenomeParameters currently in effect.</summary>
         protected NeatGenomeParameters _neatGenomeParamsCurrent;
-        readonly NeatGenomeParameters _neatGenomeParamsComplexifying;
+        protected readonly NeatGenomeParameters _neatGenomeParamsComplexifying;
         readonly NeatGenomeParameters _neatGenomeParamsSimplifying;
         readonly NeatGenomeStats _stats = new NeatGenomeStats();
-        readonly int _inputNeuronCount;
-        readonly int _outputNeuronCount;
-        readonly UInt32IdGenerator _genomeIdGenerator;
-        readonly UInt32IdGenerator _innovationIdGenerator;
+        protected readonly int _inputNeuronCount;
+        protected readonly int _outputNeuronCount;
+        protected readonly UInt32IdGenerator _genomeIdGenerator;
+        protected readonly UInt32IdGenerator _innovationIdGenerator;
         int _searchMode;
 
         readonly KeyedCircularBuffer<ConnectionEndpointsStruct,uint?> _addedConnectionBuffer 
@@ -238,7 +238,7 @@ namespace SharpNeat.Genomes.Neat
         /// <param name="length">The number of genomes to create.</param>
         /// <param name="birthGeneration">The current evolution algorithm generation. 
         /// Assigned to the new genomes as their birth generation.</param>
-        public List<NeatGenome> CreateGenomeList(int length, uint birthGeneration)
+        public virtual List<NeatGenome> CreateGenomeList(int length, uint birthGeneration)
         {   
             List<NeatGenome> genomeList = new List<NeatGenome>(length);
             for(int i=0; i<length; i++)
@@ -259,7 +259,7 @@ namespace SharpNeat.Genomes.Neat
         /// <param name="birthGeneration">The current evolution algorithm generation. 
         /// Assigned to the new genomes as their birth generation.</param>
         /// <param name="seedGenome">The seed genome to spawn new genomes from.</param>
-        public List<NeatGenome> CreateGenomeList(int length, uint birthGeneration, NeatGenome seedGenome)
+        public virtual List<NeatGenome> CreateGenomeList(int length, uint birthGeneration, NeatGenome seedGenome)
         {   
             Debug.Assert(this == seedGenome.GenomeFactory, "seedGenome is from a different genome factory.");
 
@@ -285,7 +285,7 @@ namespace SharpNeat.Genomes.Neat
         /// <param name="birthGeneration">The current evolution algorithm generation. 
         /// Assigned to the new genomes as their birth generation.</param>
         /// <param name="seedGenomeList">A list of seed genomes from which to spawn new genomes from.</param>
-        public List<NeatGenome> CreateGenomeList(int length, uint birthGeneration, List<NeatGenome> seedGenomeList)
+        public virtual List<NeatGenome> CreateGenomeList(int length, uint birthGeneration, List<NeatGenome> seedGenomeList)
         {   
             if(seedGenomeList.Count == 0) {
                 throw new SharpNeatException("CreateGenomeList() requires at least on seed genome in seedGenomeList.");
@@ -335,7 +335,7 @@ namespace SharpNeat.Genomes.Neat
         /// </summary>
         /// <param name="birthGeneration">The current evolution algorithm generation. 
         /// Assigned to the new genome as its birth generation.</param>
-        public NeatGenome CreateGenome(uint birthGeneration)
+        public virtual NeatGenome CreateGenome(uint birthGeneration)
         {   
             NeuronGeneList neuronGeneList = new NeuronGeneList(_inputNeuronCount + _outputNeuronCount);
             NeuronGeneList inputNeuronGeneList = new NeuronGeneList(_inputNeuronCount); // includes single bias neuron.
@@ -600,7 +600,7 @@ namespace SharpNeat.Genomes.Neat
 
         #region Inner Class [ConnectionDefinition]
 
-        struct ConnectionDefinition
+        protected struct ConnectionDefinition
         {
             public readonly uint _innovationId;
             public readonly int _sourceNeuronIdx;

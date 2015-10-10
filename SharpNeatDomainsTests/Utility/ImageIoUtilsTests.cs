@@ -20,7 +20,7 @@ namespace SharpNeat.Utility.Tests
             List<double[]> num0Data =
                 ImageIoUtils.ReadImage(
                     workingDirectory + "/../SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data", 28*28,
-                    1000);
+                    1000, 255);
 
             // Convert the first sample to a bitmap
             ImageIoUtils.WriteImage(workingDirectory + "/Number0.bmp", num0Data[0]);

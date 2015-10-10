@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using SharpNeat.Phenomes;
 
 #endregion
 
@@ -24,9 +25,11 @@ namespace SharpNeat.Utility
         ///     The number of image samples in the file (this is essentially the distinct number of training
         ///     pictures).
         /// </param>
+        /// <param name="pixelIntensityRange">The max numerical range of the pixel light intensity (e.g. 255 for grayscale).</param>
         /// <returns></returns>
-        public static List<double[]> ReadImage(string imagePath, int imageResolution, int numSamples)
-        {            
+        public static List<double[]> ReadImage(string imagePath, int imageResolution, int numSamples,
+            int pixelIntensityRange)
+        {
             List<double[]> imageData = new List<double[]>(numSamples);
 
             // Initialize the binary reader pointing at the image file
@@ -41,7 +44,7 @@ namespace SharpNeat.Utility
                 // Extract each pixel in the current sample image
                 for (int pixelIdx = 0; pixelIdx < imageResolution; pixelIdx++)
                 {
-                    imagePixels[pixelIdx] = reader.ReadByte();
+                    imagePixels[pixelIdx] = reader.ReadByte()/(double) pixelIntensityRange;
                 }
 
                 // Add image pixels to list
@@ -49,6 +52,18 @@ namespace SharpNeat.Utility
             }
 
             return imageData;
+        }
+
+        public static void WriteImage(string imageName, ISignalArray outputSignalArray)
+        {
+            double[] convertedSignalArray = new double[outputSignalArray.Length];
+
+            for (int idx = 0; idx < outputSignalArray.Length; idx++)
+            {
+                convertedSignalArray[idx] = outputSignalArray[idx];
+            }
+
+            WriteImage(imageName, convertedSignalArray);
         }
 
         /// <summary>
@@ -69,13 +84,13 @@ namespace SharpNeat.Utility
                 for (int widthIdx = 0; widthIdx < sideLength; widthIdx++)
                 {
                     // Get the numeric intensity of the grayscale pixel
-                    int numericColor = (int) imageData[heightIdx*sideLength + widthIdx];
+                    int numericColor = (int) imageData[heightIdx*sideLength + widthIdx] * 255;
 
                     // Create the color (grayscale) component
                     Color pixelColor = Color.FromArgb(numericColor, numericColor, numericColor);
 
                     // Set the pixel at the given 2-dimensional location with the derived color
-                    imageBitmap.SetPixel(heightIdx, widthIdx, pixelColor);
+                    imageBitmap.SetPixel(widthIdx, heightIdx, pixelColor);
                 }
             }
 

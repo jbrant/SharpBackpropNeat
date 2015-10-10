@@ -9,6 +9,7 @@ using SharpNeat.Decoders.Neat;
 using SharpNeat.DistanceMetrics;
 using SharpNeat.EvolutionAlgorithms;
 using SharpNeat.EvolutionAlgorithms.ComplexityRegulation;
+using SharpNeat.Genomes.AutoencoderNeat;
 using SharpNeat.Genomes.Neat;
 using SharpNeat.Loggers;
 using SharpNeat.Network;
@@ -152,7 +153,8 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         /// <returns>The NEAT genome factory.</returns>
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
-            return new NeatGenomeFactory(InputCount, OutputCount, NeatGenomeParameters);
+            //return new NeatGenomeFactory(InputCount, OutputCount, NeatGenomeParameters);
+            return new AutoencoderGenomeFactory(InputCount, OutputCount, 1, NeatGenomeParameters);
         }
 
         /// <summary>

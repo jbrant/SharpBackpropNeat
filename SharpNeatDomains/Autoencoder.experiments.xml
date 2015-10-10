@@ -5,14 +5,14 @@
     <AssemblyPath>SharpNeatDomains.dll</AssemblyPath>
     <ClassName>SharpNeat.Domains.EvolvedAutoencoder.EvolvedAutoencoderExperiment</ClassName>
     <Config>
-      <PopulationSize>10</PopulationSize>
+      <PopulationSize>50</PopulationSize>
       <SpecieCount>10</SpecieCount>
       <Activation>
         <Scheme>Acyclic</Scheme>
       </Activation>
-      <ComplexityRegulationStrategy>Absolute</ComplexityRegulationStrategy>
-      <ComplexityThreshold>20</ComplexityThreshold>
-      <MaxDegreeOfParallelism>1</MaxDegreeOfParallelism>
+      <ComplexityRegulationStrategy>Relative</ComplexityRegulationStrategy>
+      <ComplexityThreshold>2000</ComplexityThreshold>
+      <MaxDegreeOfParallelism>1000</MaxDegreeOfParallelism>
       <Description></Description>
       <AutoencoderSize>754</AutoencoderSize>
       <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>

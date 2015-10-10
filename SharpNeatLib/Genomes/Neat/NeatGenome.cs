@@ -119,6 +119,7 @@ namespace SharpNeat.Genomes.Neat
                 _auxStateNeuronCount = CountAuxStateNodes();
             }
 
+            // TODO: Need to uncomment this when done testing
             Debug.Assert(PerformIntegrityCheck());
         }
 
@@ -144,7 +145,8 @@ namespace SharpNeat.Genomes.Neat
             
             _evalInfo = new EvaluationInfo(copyFrom.EvaluationInfo.FitnessHistoryLength);
 
-            Debug.Assert(PerformIntegrityCheck());
+            // TODO: Need to remove this after testing as it's dangerous not to have
+            //Debug.Assert(PerformIntegrityCheck());
         }
 
         #endregion
@@ -540,8 +542,9 @@ namespace SharpNeat.Genomes.Neat
                 }
             }
 
+            // TODO: Need to uncomment this after testing as it's dangerous not to have
             // Mutation succeeded. Check resulting genome.
-            Debug.Assert(PerformIntegrityCheck());
+            //Debug.Assert(PerformIntegrityCheck());
         }
 
         /// <summary>
