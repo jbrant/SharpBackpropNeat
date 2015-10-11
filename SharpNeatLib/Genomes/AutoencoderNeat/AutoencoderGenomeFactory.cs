@@ -92,6 +92,22 @@ namespace SharpNeat.Genomes.AutoencoderNeat
         }
 
         /// <summary>
+        /// Create a genome with the provided internal state/definition data/objects.
+        /// Overridable method to allow alternative NeatGenome sub-classes to be used.
+        /// </summary>
+        public override NeatGenome CreateGenome(uint id,
+                                               uint birthGeneration,
+                                               NeuronGeneList neuronGeneList,
+                                               ConnectionGeneList connectionGeneList,
+                                               int inputNeuronCount,
+                                               int outputNeuronCount,
+                                               bool rebuildNeuronGeneConnectionInfo)
+        {
+            return new NeatGenome(this, id, birthGeneration, neuronGeneList, connectionGeneList,
+                                  inputNeuronCount, outputNeuronCount, rebuildNeuronGeneConnectionInfo, false);
+        }
+
+        /// <summary>
         ///     Creates a single randomly initialised genome.
         ///     A random set of connections are made form the input to the output neurons, the number of
         ///     connections made is based on the NeatGenomeParameters.InitialInterconnectionsProportion

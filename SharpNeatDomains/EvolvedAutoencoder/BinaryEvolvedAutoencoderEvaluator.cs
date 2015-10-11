@@ -10,7 +10,7 @@ using SharpNeat.Utility;
 
 namespace SharpNeat.Domains.EvolvedAutoencoder
 {
-    public class EvolvedAutoencoderEvaluator : IPhenomeEvaluator<IBlackBox, FitnessInfo>
+    public class BinaryEvolvedAutoencoderEvaluator : IPhenomeEvaluator<IBlackBox, FitnessInfo>
     {
         #region Constructors
 
@@ -26,16 +26,51 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         ///     The proportion of the sample dataset to use for training (the result will be
         ///     used as part of the validation dataset).
         /// </param>
-        public EvolvedAutoencoderEvaluator(string trainingImagesPath, int imageResolution, int numImageSamples,
+        public BinaryEvolvedAutoencoderEvaluator(string trainingImagesPath, int imageResolution, int numImageSamples,
             double learningRate, int numBackpropIterations, double trainingSampleProportion)
-        {            
-            // Read in the images on which the network will be trained
-            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, imageResolution, numImageSamples,
-                255);
-            
+        {
+            // TODO: This could be split into training/validation sets
+
+            double[] sample1 = {0.0, 0.0, 0.0, 0.0};
+            double[] sample2 = {0.0, 0.0, 0.0, 1.0};
+            double[] sample3 = {0.0, 0.0, 1.0, 0.0};
+            double[] sample4 = {0.0, 0.0, 1.0, 1.0};
+            double[] sample5 = {0.0, 1.0, 0.0, 0.0};
+            double[] sample6 = {0.0, 1.0, 0.0, 1.0};
+            double[] sample7 = {0.0, 1.0, 1.0, 0.0};
+            double[] sample8 = {0.0, 1.0, 1.0, 1.0};
+            double[] sample9 = {1.0, 0.0, 0.0, 0.0};
+            double[] sample10 = {1.0, 0.0, 0.0, 1.0};
+            double[] sample11 = {1.0, 0.0, 1.0, 0.0};
+            double[] sample12 = {1.0, 0.0, 1.0, 1.0};
+            double[] sample13 = {1.0, 1.0, 0.0, 0.0};
+            double[] sample14 = {1.0, 1.0, 0.0, 1.0};
+            double[] sample15 = {1.0, 1.0, 1.0, 0.0};
+            double[] sample16 = {1.0, 1.0, 1.0, 1.0};
+            List<double[]> allImageSamples = new List<double[]>
+            {
+                sample1,
+                sample2,
+                sample3,
+                sample4,
+                sample5,
+                sample6,
+                sample7,
+                sample8,
+                sample9,
+                sample10,
+                sample11,
+                sample12,
+                sample13,
+                sample14,
+                sample15,
+                sample16
+            };
+
             // Determine the ending index of the training sample
             int trainingSampleEndIndex = (int) (allImageSamples.Count*trainingSampleProportion) - 1;
 
+            // TODO: Need a more robust sampling method
             // Extract the training and validation sample images
             _trainingImageSamples = allImageSamples.GetRange(0, trainingSampleEndIndex);
             _validationImageSamples = allImageSamples.Skip(trainingSampleEndIndex + 1).ToList();
@@ -132,7 +167,9 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             // Calculate the fitness as the difference between the maximum possible fitness 
             // and the sum of the errors on the validation set
             double fitness = _maxFitness - errorSum;
-            
+
+            // TODO: Need to define a stop condition
+
             return new FitnessInfo(fitness, fitness);
         }
 

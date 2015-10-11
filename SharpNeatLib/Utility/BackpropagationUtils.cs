@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using SharpNeat.Network;
 using SharpNeat.Phenomes;
@@ -67,10 +68,11 @@ namespace SharpNeat.Utility
                     // Calculate the error for every output node with respect to its corresponding target value
                     for (; nodeIdx >= layers[layerIdx - 1]._endNodeIdx; nodeIdx--)
                     {
-                        signalErrors[nodeIdx] = (targetValues[(targetValues.Length - 1) - ((nodeActivationValues.Length - 1) - nodeIdx)] -
-                                                 nodeActivationValues[nodeIdx])*
-                                                nodeActivationFunctions[nodeIdx].CalculateDerivative(
-                                                    nodeActivationValues[nodeIdx]);
+                        signalErrors[nodeIdx] =
+                            (targetValues[(targetValues.Length - 1) - ((nodeActivationValues.Length - 1) - nodeIdx)] -
+                             nodeActivationValues[nodeIdx])*
+                            nodeActivationFunctions[nodeIdx].CalculateDerivative(
+                                nodeActivationValues[nodeIdx]);
                     }
                 }
 
@@ -147,6 +149,30 @@ namespace SharpNeat.Utility
             double totalError = signalErrors.Sum(signalError => Math.Pow(signalError, 2));
 
             return totalError/signalErrors.Length;
+        }
+
+        /// <summary>
+        ///     Calculates the error of the network by comparing the difference between each input and its corresponding output.
+        ///     The total of the differences is the error.
+        /// </summary>
+        /// <param name="inputSignalArray">The input signal array.</param>
+        /// <param name="outputSignalArray">The output signal array.</param>
+        /// <returns></returns>
+        public static double CalculateOutputError(ISignalArray inputSignalArray, ISignalArray outputSignalArray)
+        {
+            // Make sure that the input and output array are of the same length
+            Debug.Assert(inputSignalArray.Length == outputSignalArray.Length,
+                "Input and output signal arrays are different lengths.");
+
+            double activationDiff = 0.0;
+
+            // Compare each input to its corresponding output, taking the absolute value of the difference in activation
+            for (int idx = 0; idx < inputSignalArray.Length; idx++)
+            {
+                activationDiff += Math.Abs(inputSignalArray[idx] - outputSignalArray[idx]);
+            }
+
+            return activationDiff;
         }
     }
 }

@@ -68,7 +68,9 @@
     <Compile Include="BoxesVisualDiscrimination\BoxesVisualDiscriminationEvaluator.cs" />
     <Compile Include="DoubleLine.cs" />
     <Compile Include="DoublePoint.cs" />
+    <Compile Include="EvolvedAutoencoder\BinaryEvolvedAutoencoderEvaluator.cs" />
     <Compile Include="EvolvedAutoencoder\EvolvedAutoencoderEvaluator.cs" />
+    <Compile Include="EvolvedAutoencoder\BinaryEvolvedAutoencoderExperiment.cs" />
     <Compile Include="EvolvedAutoencoder\EvolvedAutoencoderExperiment.cs" />
     <Compile Include="FunctionRegression\AbsFunction.cs" />
     <Compile Include="FunctionRegression\LogFunction.cs" />

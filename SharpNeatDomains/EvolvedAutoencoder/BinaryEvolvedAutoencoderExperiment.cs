@@ -20,7 +20,7 @@ using SharpNeat.SpeciationStrategies;
 
 namespace SharpNeat.Domains.EvolvedAutoencoder
 {
-    public class EvolvedAutoencoderExperiment : IGuiNeatExperiment
+    public class BinaryEvolvedAutoencoderExperiment : IGuiNeatExperiment
     {
         #region Private instance variables
 
@@ -224,7 +224,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                     complexityRegulationStrategy, logger);
 
             // Create evalutor
-            EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator(_trainingImagesFilename,
+            BinaryEvolvedAutoencoderEvaluator evaluator = new BinaryEvolvedAutoencoderEvaluator(_trainingImagesFilename,
                 InputCount, _numImageSamples, _learningRate, _numBackpropIterations, _trainingSampleProportion);
 
             // Create genome decoder

@@ -575,7 +575,7 @@ namespace SharpNeat.Genomes.Neat
                                                bool rebuildNeuronGeneConnectionInfo)
         {
             return new NeatGenome(this, id, birthGeneration, neuronGeneList, connectionGeneList,
-                                  inputNeuronCount, outputNeuronCount, rebuildNeuronGeneConnectionInfo);
+                                  inputNeuronCount, outputNeuronCount, rebuildNeuronGeneConnectionInfo, true);
         }
 
         /// <summary>

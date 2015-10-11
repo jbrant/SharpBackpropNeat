@@ -5,7 +5,7 @@
     <AssemblyPath>SharpNeatDomains.dll</AssemblyPath>
     <ClassName>SharpNeat.Domains.EvolvedAutoencoder.EvolvedAutoencoderExperiment</ClassName>
     <Config>
-      <PopulationSize>50</PopulationSize>
+      <PopulationSize>150</PopulationSize>
       <SpecieCount>10</SpecieCount>
       <Activation>
         <Scheme>Acyclic</Scheme>
@@ -14,12 +14,47 @@
       <ComplexityThreshold>2000</ComplexityThreshold>
       <MaxDegreeOfParallelism>1000</MaxDegreeOfParallelism>
       <Description></Description>
+      <GenomeConfig>
+        <InitialConnectionProportion>1</InitialConnectionProportion>
+        <WeightMutationProbability>0.9</WeightMutationProbability>
+        <AddConnnectionProbability>0.1</AddConnnectionProbability>
+        <AddNodeProbability>0.2</AddNodeProbability>
+      </GenomeConfig>
       <AutoencoderSize>754</AutoencoderSize>
+      <NumInitialHiddenNodes>1</NumInitialHiddenNodes>
       <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>
-      <NumImageSamples>1000</NumImageSamples>
-      <LearningRate>0.9</LearningRate>
-      <BackpropagationError>0.001</BackpropagationError>
-      <TrainingSampleProportion>0.7</TrainingSampleProportion>
+      <NumImageSamples>20</NumImageSamples>
+      <LearningRate>3.0</LearningRate>
+      <NumBackpropagationIterations>50</NumBackpropagationIterations>
+      <TrainingSampleProportion>0.8</TrainingSampleProportion>
+    </Config>
+  </Experiment>
+
+  <Experiment name="Binary Evolved Autoencoder (NEAT)">
+    <AssemblyPath>SharpNeatDomains.dll</AssemblyPath>
+    <ClassName>SharpNeat.Domains.EvolvedAutoencoder.BinaryEvolvedAutoencoderExperiment</ClassName>
+    <Config>
+      <PopulationSize>150</PopulationSize>
+      <SpecieCount>10</SpecieCount>
+      <Activation>
+        <Scheme>Acyclic</Scheme>
+      </Activation>
+      <ComplexityRegulationStrategy>Relative</ComplexityRegulationStrategy>
+      <ComplexityThreshold>2000</ComplexityThreshold>
+      <Description></Description>
+      <GenomeConfig>
+        <InitialConnectionProportion>1</InitialConnectionProportion>
+        <WeightMutationProbability>0.9</WeightMutationProbability>
+        <AddConnnectionProbability>0.1</AddConnnectionProbability>
+        <AddNodeProbability>0.2</AddNodeProbability>
+      </GenomeConfig>
+      <AutoencoderSize>4</AutoencoderSize>
+      <NumInitialHiddenNodes>1</NumInitialHiddenNodes>
+      <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>
+      <NumImageSamples>20</NumImageSamples>
+      <LearningRate>3.0</LearningRate>
+      <NumBackpropagationIterations>50</NumBackpropagationIterations>
+      <TrainingSampleProportion>0.8</TrainingSampleProportion>
     </Config>
   </Experiment>
   

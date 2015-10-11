@@ -254,7 +254,7 @@ namespace SharpNeat.Phenomes.NeuralNets
             BackpropagationUtils.BackpropagateError(_layerInfoArr, _connectionArr, learningRate, nodeErrors,
                 _activationArr);
 
-            return BackpropagationUtils.CalculateOverallError(nodeErrors);
+            return BackpropagationUtils.CalculateOutputError(InputSignalArray, OutputSignalArray);
         }
 
         /// <summary>

@@ -72,8 +72,12 @@ namespace SharpNeat.Genomes.Neat
         readonly int _inputNeuronCount;
         readonly int _outputNeuronCount;
         readonly int _inputAndBiasNeuronCount;
-        readonly int _inputBiasOutputNeuronCount;
+        readonly int _inputBiasOutputNeuronCount;        
         int _auxStateNeuronCount;
+
+        // Since the same genome is also used for autoencoders, we need to be able to disallow direct connections
+        // between the input and output layers
+        private readonly bool _allowInputToOutputConnections;
 
         // Created in a just-in-time manner and cached for possible re-use.
         NetworkConnectivityData _networkConnectivityData;
@@ -92,7 +96,8 @@ namespace SharpNeat.Genomes.Neat
                           ConnectionGeneList connectionGeneList, 
                           int inputNeuronCount,
                           int outputNeuronCount,
-                          bool rebuildNeuronGeneConnectionInfo)
+                          bool rebuildNeuronGeneConnectionInfo,
+                          bool allowInputToOutputConnections)
         {
             _genomeFactory = genomeFactory;
             _id = id;
@@ -101,6 +106,7 @@ namespace SharpNeat.Genomes.Neat
             _connectionGeneList = connectionGeneList;
             _inputNeuronCount = inputNeuronCount;
             _outputNeuronCount = outputNeuronCount;
+            _allowInputToOutputConnections = allowInputToOutputConnections;
 
             // Precalculate some often used values.
             _inputAndBiasNeuronCount = inputNeuronCount+1;
@@ -708,6 +714,8 @@ namespace SharpNeat.Genomes.Neat
             int hiddenOutputNeuronCount = neuronCount - _inputAndBiasNeuronCount;
             int inputBiasHiddenNeuronCount = neuronCount - _outputNeuronCount;
 
+            int hiddenNeuronCount = hiddenOutputNeuronCount - _outputNeuronCount;
+
             // Use slightly different logic when evolving feedforward only networks.
             if(_genomeFactory.NeatGenomeParameters.FeedforwardOnly)
             {
@@ -723,16 +731,62 @@ namespace SharpNeat.Genomes.Neat
                         srcNeuronIdx += _outputNeuronCount;
                     }
 
-                    // Valid target nodes are all hidden and output nodes.
-                    int tgtNeuronIdx = _inputAndBiasNeuronCount + _genomeFactory.Rng.Next(hiddenOutputNeuronCount-1);
-                    if(srcNeuronIdx == tgtNeuronIdx)  {
-                        if(++tgtNeuronIdx == neuronCount) {
-                            // Wrap around to first possible target neuron (first output).
-                            // ENHANCEMENT: Devise more efficient strategy. This can still select the same node as source and target (the cyclic conenction is tested for below). 
-                            tgtNeuronIdx = _inputAndBiasNeuronCount;
+                    int tgtNeuronIdx;
+
+                    // If we're allowed to add connections directly between the input and output (i.e. this is not an autoencoder),
+                    // then we can select the target from both the list of hidden AND output nodes
+                    if (_allowInputToOutputConnections)
+                    {
+                        // Valid target nodes are all hidden and output nodes.
+                        tgtNeuronIdx = _inputAndBiasNeuronCount + _genomeFactory.Rng.Next(hiddenOutputNeuronCount - 1);
+                        if (srcNeuronIdx == tgtNeuronIdx)
+                        {
+                            if (++tgtNeuronIdx == neuronCount)
+                            {
+                                // Wrap around to first possible target neuron (first output).
+                                // ENHANCEMENT: Devise more efficient strategy. This can still select the same node as source and target (the cyclic conenction is tested for below). 
+                                tgtNeuronIdx = _inputAndBiasNeuronCount;
+                            }
                         }
                     }
+                    // Otherwise, this is an autoencoder structure, so we need to determine whether the source is an input node or hidden node
+                    // in order to dictate our selection of a target. Note that if, as a result of a simplification process, all hidden nodes
+                    // were removed, there's no point in trying to select a target at all - just continue to the next iteration
+                    else if (hiddenNeuronCount > 0)
+                    {
+                        if (NodeType.Input == _neuronGeneList[srcNeuronIdx].NodeType)
+                        {
+                            // Valid target nodes are only hidden nodes
+                            tgtNeuronIdx = _inputBiasOutputNeuronCount + _genomeFactory.Rng.Next(hiddenNeuronCount - 1);
 
+                            // There's no chance of the source and target neurons being equal because of the explicit offset above
+                        }
+                        else
+                        {
+                            // Valid target nodes are both output nodes and other hidden nodes 
+                            tgtNeuronIdx = _inputAndBiasNeuronCount +
+                                           _genomeFactory.Rng.Next(hiddenOutputNeuronCount - 1);
+
+                            if (srcNeuronIdx == tgtNeuronIdx)
+                            {
+                                if (++tgtNeuronIdx == neuronCount)
+                                {
+                                    // Wrap around to first possible target neuron (first output).
+                                    // ENHANCEMENT: Devise more efficient strategy. This can still select the same node as source and target (the cyclic conenction is tested for below). 
+                                    tgtNeuronIdx = _inputAndBiasNeuronCount;
+                                }
+                            }
+                        }
+
+                        if (_neuronGeneList[srcNeuronIdx].NodeType == NodeType.Input &&
+                            _neuronGeneList[tgtNeuronIdx].NodeType == NodeType.Output)
+                        {
+                            throw new SharpNeatException("Attempt was made to directly connect input and output nodes.");
+                        }
+                    }
+                    // There's no hidden neurons to begin with, so continue to the next iteration
+                    else continue;
+                    
                     // Test if this connection already exists or is recurrent
                     NeuronGene sourceNeuron = _neuronGeneList[srcNeuronIdx];            
                     NeuronGene targetNeuron = _neuronGeneList[tgtNeuronIdx];
