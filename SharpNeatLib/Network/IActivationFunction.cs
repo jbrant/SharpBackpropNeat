@@ -69,6 +69,11 @@ namespace SharpNeat.Network
         float Calculate(float x, float[] auxArgs);
 
         /// <summary>
+        /// Calculates the partial derivative of the activation function with respect to x (the output).
+        /// </summary>
+        double CalculateDerivative(double x);
+
+        /// <summary>
         /// For activation functions that accept auxiliary arguments; generates random initial values for aux arguments for newly
         /// added nodes (from an 'add neuron' mutation).
         /// </summary>

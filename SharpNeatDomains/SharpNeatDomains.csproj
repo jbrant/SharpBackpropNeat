@@ -68,6 +68,10 @@
     <Compile Include="BoxesVisualDiscrimination\BoxesVisualDiscriminationEvaluator.cs" />
     <Compile Include="DoubleLine.cs" />
     <Compile Include="DoublePoint.cs" />
+    <Compile Include="EvolvedAutoencoder\BinaryEvolvedAutoencoderEvaluator.cs" />
+    <Compile Include="EvolvedAutoencoder\EvolvedAutoencoderEvaluator.cs" />
+    <Compile Include="EvolvedAutoencoder\BinaryEvolvedAutoencoderExperiment.cs" />
+    <Compile Include="EvolvedAutoencoder\EvolvedAutoencoderExperiment.cs" />
     <Compile Include="FunctionRegression\AbsFunction.cs" />
     <Compile Include="FunctionRegression\LogFunction.cs" />
     <Compile Include="FunctionRegression\RbfFunctionRegressionExperiment.cs" />
@@ -190,6 +194,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DoublePoleBalancing\Antiwiggle_Explanation_Email.txt" />
+    <Content Include="Autoencoder.experiments.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SharpNeatDomains.experiments.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -197,6 +205,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="EvolvedAutoencoder\ImageData\Number0Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number1Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number2Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number3Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number4Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number5Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number6Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number7Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number8Samples.data" />
+    <None Include="EvolvedAutoencoder\ImageData\Number9Samples.data" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MazeNavigation\MCNSExperiment\" />

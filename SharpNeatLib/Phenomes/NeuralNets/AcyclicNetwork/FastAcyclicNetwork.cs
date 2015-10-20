@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+using System.Diagnostics;
 using SharpNeat.Network;
+using SharpNeat.Utility;
 
 namespace SharpNeat.Phenomes.NeuralNets
 {
@@ -207,6 +210,51 @@ namespace SharpNeat.Phenomes.NeuralNets
                     _activationArr[nodeIdx] = _nodeActivationFnArr[nodeIdx].Calculate(_activationArr[nodeIdx], _nodeAuxArgsArr[nodeIdx]);
                 }
             }
+        }
+
+        /// <summary>
+        ///     Calculates the network error given some real-valued targets using back-propagation.
+        /// </summary>
+        /// <param name="targets">The target values against which to calculate the error.</param>
+        /// <param name="learningRate">The learning rate parameter to control convergence speed.</param>
+        /// <returns>The overall error of the network.</returns>
+        public double CalculateError(double[] targets, double learningRate)
+        {
+            // Make sure target values and output counts match (ordering is assumed)
+            Debug.Assert(targets.Length == OutputCount, "Target and output length don't match.");
+
+            // Calculate the node errors
+            double[] nodeErrors = BackpropagationUtils.CalculateErrorSignals(_layerInfoArr, _connectionArr,
+                _activationArr, targets, _nodeActivationFnArr);
+
+            // Backpropagate the errors and update the weights
+            BackpropagationUtils.BackpropagateError(_layerInfoArr, _connectionArr, learningRate, nodeErrors,
+                _activationArr);
+
+            return BackpropagationUtils.CalculateOverallError(nodeErrors);
+        }
+
+        /// <summary>
+        ///     Calculates the network error given some learning rate using back-propagation.  Note that this is
+        ///     primarily for use with autoencoders as the input nodes are used as the targets, thus attempting to learn the
+        ///     identity function.
+        /// </summary>
+        /// <param name="learningRate">The learning rate for the weight updates.</param>
+        /// <returns>The overall error of the network.</returns>
+        public double CalculateError(double learningRate)
+        {
+            // Make sure input and output counts match (ordering is assumed)
+            Debug.Assert(InputCount == OutputCount, "Input and output length don't match.");
+
+            // Calculate the node errors
+            double[] nodeErrors = BackpropagationUtils.CalculateErrorSignals(_layerInfoArr, _connectionArr,
+                _activationArr, InputSignalArray, _nodeActivationFnArr);
+
+            // Backpropagate the errors and update the weights
+            BackpropagationUtils.BackpropagateError(_layerInfoArr, _connectionArr, learningRate, nodeErrors,
+                _activationArr);
+
+            return BackpropagationUtils.CalculateOutputError(InputSignalArray, OutputSignalArray);
         }
 
         /// <summary>
