@@ -61,7 +61,7 @@ namespace SharpNeat.Phenomes.NeuralNets
         /// <summary>
         /// Array of connections.
         /// </summary>
-        readonly FastConnection[] _connectionArr;
+        public readonly FastConnection[] _connectionArr;
         /// <summary>
         /// Array of layer information. Feedforward-only network activation can be performed most 
         /// efficiently by propogating signals through the network one layer at a time.

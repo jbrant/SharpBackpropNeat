@@ -32,6 +32,7 @@ namespace SharpNeat.Utility
         {
             List<double[]> imageData = new List<double[]>(numSamples);
 
+            int sideLength = (int)Math.Sqrt(imageResolution);
             // Initialize the binary reader pointing at the image file
             BinaryReader reader = new BinaryReader(File.OpenRead(imagePath));
 
@@ -44,9 +45,9 @@ namespace SharpNeat.Utility
                 // Extract each pixel in the current sample image
                 for (int pixelIdx = 0; pixelIdx < imageResolution; pixelIdx++)
                 {
-                    imagePixels[pixelIdx] = reader.ReadByte()/(double) pixelIntensityRange;
-                }
-
+                    imagePixels[pixelIdx] = reader.ReadByte() / (double)pixelIntensityRange;
+                }                
+                
                 // Add image pixels to list
                 imageData.Add(imagePixels);
             }
@@ -74,7 +75,7 @@ namespace SharpNeat.Utility
         public static void WriteImage(string imageName, double[] imageData)
         {
             // For the MNIST dataset, this is a square, so the side lengths are all equal
-            int sideLength = (int) Math.Sqrt(imageData.Length);
+            int sideLength = (int)Math.Sqrt(imageData.Length);
 
             // Create a square bitmap
             Bitmap imageBitmap = new Bitmap(sideLength, sideLength);
@@ -84,7 +85,7 @@ namespace SharpNeat.Utility
                 for (int widthIdx = 0; widthIdx < sideLength; widthIdx++)
                 {
                     // Get the numeric intensity of the grayscale pixel
-                    int numericColor = (int) imageData[heightIdx*sideLength + widthIdx] * 255;
+                    int numericColor = (int)(imageData[heightIdx * sideLength + widthIdx] * 255);
 
                     // Create the color (grayscale) component
                     Color pixelColor = Color.FromArgb(numericColor, numericColor, numericColor);
@@ -97,5 +98,51 @@ namespace SharpNeat.Utility
             // Save the image
             imageBitmap.Save(imageName);
         }
-    }
+
+        #region Reduce Image Resolutions    
+        /// <summary>
+        ///     Reduces the given image by @reduceAmountPerSide
+        ///     @reduceAmountPerSide MUST DIVIDE EVENLY INTO @sideLength
+        /// </summary>
+        /// <param name="imagePixels">The values of the image.</param>
+        /// <param name="reduceAmountPerSide">The amount to divide each side by.</param>
+        /// <param name="sideLength">The num of pixels on the side of the image(IE 11 by 11 means sideLength = 11).</param>
+        public static double[] ReduceImage(double[] imagePixels, int reduceAmountPerSide, int sideLength)
+        {
+            double[] imagePixelsReduced = new double[sideLength * sideLength / (reduceAmountPerSide * reduceAmountPerSide)];
+            // Create a square bitmap
+
+            for (int heightIdx = 0; heightIdx < sideLength; heightIdx++)
+            {
+                for (int widthIdx = 0; widthIdx < sideLength; widthIdx++)
+                {
+                    int indLarge = widthIdx + heightIdx * sideLength;
+                    int indexSmall = ((int)widthIdx) / reduceAmountPerSide + (int)(((int)(heightIdx / reduceAmountPerSide) * sideLength) / reduceAmountPerSide);
+                    imagePixelsReduced[indexSmall] += imagePixels[indLarge] / (reduceAmountPerSide * reduceAmountPerSide);
+                }
+            }
+
+            return imagePixelsReduced;
+        }
+
+        /// <summary>
+        ///     Reduces all the given images by @reduceAmountPerSide
+        ///     @reduceAmountPerSide MUST DIVIDE EVENLY INTO @sideLength
+        /// </summary>
+        /// <param name="imagePixels">The values of the images.</param>
+        /// <param name="reduceAmountPerSide">The amount to divide each side by.</param>
+        /// <param name="sideLength">The num of pixels on the side of the image(IE 11 by 11 means sideLength = 11).</param>
+        public static List<double[]> ReduceImages(List<double[]> imagePixels, int reduceAmountPerSide, int sideLength)
+        {
+            List<double[]> imageData = new List<double[]>(imagePixels.Count);
+
+            foreach (double[] data in imagePixels)
+            {
+                imageData.Add(ReduceImage(data, reduceAmountPerSide, sideLength));
+            }
+
+            return imageData;
+        }
+    }   
+    #endregion
 }

@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -54,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Helper\GenomeHelper.cs" />
     <Compile Include="Phenomes\NeuralNets\AcyclicNetwork\FastAcyclicNetworkTests.cs" />
+    <Compile Include="Phenomes\NeuralNets\AcyclicNetwork\HyperNEATAutoEncoderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,9 +72,17 @@
     <Content Include="Resources\3In-2Hidden-1Out.gnm.xml" />
     <Content Include="Resources\5Out-3Hidden-5Out.gnm.xml" />
     <Content Include="Resources\2In-2Hidden-1Out.gnm.xml" />
+    <Content Include="Resources\BestGenome9600.gnm.xml" />
+    <Content Include="Resources\champ_77,22_20151013_143931.gnm.xml" />
+    <Content Include="Resources\Genome_99_35.gnm.xml" />
+    <Content Include="Resources\NewToTest.gnm.xml" />
+    <Content Include="Resources\Only5iterationsofBP.gnm.xml" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

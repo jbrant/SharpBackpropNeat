@@ -241,6 +241,7 @@ namespace SharpNeat.Decoders.HyperNeat
                 {
                     inputSignalArr[i] = substrateConn._srcNode._position[i];
                     inputSignalArr[i + _dimensionality] = substrateConn._tgtNode._position[i];
+                    inputSignalArr[i + 2 * _dimensionality] = Math.Abs(substrateConn._srcNode._position[i] - substrateConn._tgtNode._position[i]);
                 }
 
                 // Optional connection length input.

@@ -27,7 +27,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
         public void ActivateTest()
         {
             // Read in the NEAT genome
-            NeatGenome genome = GenomeHelper.ReadNeatGenome(_inputFilePath, 5, 5);
+            NeatGenome genome = GenomeHelper.ReadStandardGenome(_inputFilePath, 5, 5);
 
             // Decode the genome to an acyclic network
             FastAcyclicNetwork network = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genome);

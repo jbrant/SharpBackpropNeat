@@ -85,7 +85,7 @@ namespace SharpNeat.Network
 
         public double CalculateDerivative(double x)
         {
-            throw new NotImplementedException();
+            return x *(1- x);
         }
 
         /// <summary>

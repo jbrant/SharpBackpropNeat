@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <ActivationFunctions>
+    <Fn id="0" name="Linear" prob="0.25" />
+    <Fn id="1" name="BipolarSigmoid" prob="0.25" />
+    <Fn id="2" name="Gaussian" prob="0.25" />
+    <Fn id="3" name="Sine" prob="0.25" />
+  </ActivationFunctions>
+  <Networks>
+    <Network id="2924" birthGen="23" fitness="97.667692076830733">
+      <Nodes>
+        <Node type="bias" id="0" fnId="0" />
+        <Node type="in" id="1" fnId="0" />
+        <Node type="in" id="2" fnId="0" />
+        <Node type="in" id="3" fnId="0" />
+        <Node type="in" id="4" fnId="0" />
+        <Node type="in" id="5" fnId="0" />
+        <Node type="in" id="6" fnId="0" />
+        <Node type="in" id="7" fnId="0" />
+        <Node type="in" id="8" fnId="0" />
+        <Node type="in" id="9" fnId="0" />
+        <Node type="in" id="10" fnId="0" />
+        <Node type="out" id="11" fnId="0" />
+        <Node type="out" id="12" fnId="0" />
+        <Node type="hid" id="179" fnId="1" />
+      </Nodes>
+      <Connections>
+        <Con id="25" src="6" tgt="11" wght="-4.9806788414294036" />
+        <Con id="34" src="10" tgt="12" wght="0.69932046077486121" />
+        <Con id="35" src="2" tgt="12" wght="2.4806894896434959" />
+        <Con id="36" src="1" tgt="12" wght="-2.7686304968962117" />
+        <Con id="45" src="9" tgt="12" wght="-1.5435397177801113" />
+        <Con id="62" src="5" tgt="12" wght="2.6455999245467781" />
+        <Con id="69" src="7" tgt="11" wght="2.2522843171301234" />
+        <Con id="70" src="12" tgt="11" wght="2.0988915575371427" />
+        <Con id="180" src="11" tgt="179" wght="-1.998320698871169" />
+        <Con id="181" src="179" tgt="11" wght="-1.2417001774239211" />
+        <Con id="210" src="6" tgt="179" wght="-3.504917510683585" />
+      </Connections>
+    </Network>
+  </Networks>
+</Root>

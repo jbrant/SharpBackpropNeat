@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Experiments>
-
   <Experiment name="Evolved Autoencoder (NEAT)">
     <AssemblyPath>SharpNeatDomains.dll</AssemblyPath>
     <ClassName>SharpNeat.Domains.EvolvedAutoencoder.EvolvedAutoencoderExperiment</ClassName>
     <Config>
       <PopulationSize>150</PopulationSize>
-      <SpecieCount>10</SpecieCount>
+      <SpecieCount>1</SpecieCount>
       <Activation>
         <Scheme>Acyclic</Scheme>
       </Activation>
@@ -15,14 +14,15 @@
       <MaxDegreeOfParallelism>1000</MaxDegreeOfParallelism>
       <Description></Description>
       <GenomeConfig>
-        <InitialConnectionProportion>1</InitialConnectionProportion>
-        <WeightMutationProbability>0.9</WeightMutationProbability>
+        <InitialConnectionProportion>.1</InitialConnectionProportion>
+        <WeightMutationProbability>.9</WeightMutationProbability>
         <AddConnnectionProbability>0.1</AddConnnectionProbability>
-        <AddNodeProbability>0.2</AddNodeProbability>
+        <AddNodeProbability>.1</AddNodeProbability>
       </GenomeConfig>
-      <AutoencoderSize>754</AutoencoderSize>
+      <AutoencoderSize>784</AutoencoderSize>
       <NumInitialHiddenNodes>1</NumInitialHiddenNodes>
-      <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>
+      <ResolutionReductionPerSide>2</ResolutionReductionPerSide>
+      <TrainingImages>C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number0Samples.data</TrainingImages>
       <NumImageSamples>20</NumImageSamples>
       <LearningRate>3.0</LearningRate>
       <NumBackpropagationIterations>50</NumBackpropagationIterations>
@@ -50,12 +50,45 @@
       </GenomeConfig>
       <AutoencoderSize>4</AutoencoderSize>
       <NumInitialHiddenNodes>1</NumInitialHiddenNodes>
-      <TrainingImages>F:/User Data/Jonathan/Documents/school/Jonathan/Graduate/PhD/Development/C# NEAT/SharpBackpropNeat/SharpNeatDomains/EvolvedAutoencoder/ImageData/Number0Samples.data</TrainingImages>
+      <TrainingImages>C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number0Samples.data</TrainingImages>
       <NumImageSamples>20</NumImageSamples>
       <LearningRate>3.0</LearningRate>
       <NumBackpropagationIterations>50</NumBackpropagationIterations>
       <TrainingSampleProportion>0.8</TrainingSampleProportion>
     </Config>
   </Experiment>
-  
+  <Experiment name="Evolved Autoencoder (HyperNEAT)">
+    <AssemblyPath>SharpNeatDomains.dll</AssemblyPath>
+    <ClassName>SharpNeat.Domains.EvolvedAutoEncoderHyperNeat.EvolvedAutoEncoderHyperNeatExperiment</ClassName>
+    <Config>
+      <PopulationSize>150</PopulationSize>
+      <SpecieCount>10</SpecieCount>
+      <ActivationCppn>
+        <Scheme>CyclicFixedIters</Scheme>
+        <Iters>4</Iters>
+      </ActivationCppn>
+      <Activation>
+        <Scheme>Acyclic</Scheme>
+      </Activation>
+      <ComplexityRegulationStrategy>Relative</ComplexityRegulationStrategy>
+      <ComplexityThreshold>10</ComplexityThreshold>
+      <LengthCppnInput>true</LengthCppnInput>
+      <Resolution>28</Resolution>
+      <ResolutionReductionPerSide>2</ResolutionReductionPerSide>
+      <GenomeConfig>
+        <InitialConnectionProportion>.1</InitialConnectionProportion>
+        <WeightMutationProbability>.9</WeightMutationProbability>
+        <AddConnnectionProbability>0.1</AddConnnectionProbability>
+        <AddNodeProbability>.1</AddNodeProbability>
+      </GenomeConfig>
+      <TrainingImages>C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data</TrainingImages>
+      <NumImageSamples>40</NumImageSamples>
+      <LearningRate>4</LearningRate>
+      <NumBackpropagationIterations>100</NumBackpropagationIterations>
+      <TrainingSampleProportion>0.8</TrainingSampleProportion>
+      <Description>
+        CAP 6616, generating an Autoencoder with HyperNEAT
+      </Description>
+    </Config>
+  </Experiment>
 </Experiments>

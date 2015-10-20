@@ -34,6 +34,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         private double _learningRate;
         private int _numBackpropIterations;
         private double _trainingSampleProportion;
+        private int _resolutionReductionPerSide; 
         private int _numInitialHiddenNodes;
 
         #endregion
@@ -89,9 +90,10 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         {
             // Read in boiler plate configuration settings
             Name = name;
+            _resolutionReductionPerSide = XmlUtils.GetValueAsInt(xmlConfig, "ResolutionReductionPerSide");
             Description = XmlUtils.TryGetValueAsString(xmlConfig, "Description");
             DefaultPopulationSize = XmlUtils.GetValueAsInt(xmlConfig, "PopulationSize");
-            InputCount = OutputCount = XmlUtils.GetValueAsInt(xmlConfig, "AutoencoderSize");
+            InputCount = OutputCount = XmlUtils.GetValueAsInt(xmlConfig, "AutoencoderSize")/(_resolutionReductionPerSide * _resolutionReductionPerSide);
             _numInitialHiddenNodes = XmlUtils.GetValueAsInt(xmlConfig, "NumInitialHiddenNodes");
 
             // Read in algorithm/logging configuration
@@ -104,11 +106,11 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             // Construct NEAT EA parameters
             NeatEvolutionAlgorithmParameters = new NeatEvolutionAlgorithmParameters();
             NeatEvolutionAlgorithmParameters.SpecieCount = XmlUtils.GetValueAsInt(xmlConfig, "SpecieCount");
-
             // Construct NEAT genome parameters
             NeatGenomeParameters = ExperimentUtils.ReadNeatGenomeParameters(xmlConfig);
             NeatGenomeParameters.FeedforwardOnly = _activationScheme.AcyclicNetwork;
-            NeatGenomeParameters.ActivationFn = PlainSigmoid.__DefaultInstance;            
+            NeatGenomeParameters.ActivationFn = PlainSigmoid.__DefaultInstance;
+            NeatGenomeParameters.DeleteConnectionMutationProbability = NeatGenomeParameters.AddConnectionMutationProbability;
 
             // Read in experiment domain-specific parameters
             _trainingImagesFilename = XmlUtils.TryGetValueAsString(xmlConfig, "TrainingImages");
@@ -116,6 +118,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             _learningRate = XmlUtils.GetValueAsDouble(xmlConfig, "LearningRate");
             _numBackpropIterations = XmlUtils.GetValueAsInt(xmlConfig, "NumBackpropagationIterations");
             _trainingSampleProportion = XmlUtils.GetValueAsDouble(xmlConfig, "TrainingSampleProportion");
+
         }
 
         /// <summary>
@@ -156,7 +159,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
             //return new NeatGenomeFactory(InputCount, OutputCount, NeatGenomeParameters);
-            return new AutoencoderGenomeFactory(InputCount, OutputCount, _numInitialHiddenNodes, NeatGenomeParameters);
+            return new NeatGenomeFactory(InputCount, OutputCount, NeatGenomeParameters);
         }
 
         /// <summary>
@@ -225,7 +228,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
             // Create evalutor
             EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator(_trainingImagesFilename,
-                InputCount, _numImageSamples, _learningRate, _numBackpropIterations, _trainingSampleProportion);
+                InputCount, _numImageSamples, _learningRate, _numBackpropIterations, _trainingSampleProportion, _resolutionReductionPerSide);
 
             // Create genome decoder
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = CreateGenomeDecoder();
@@ -240,6 +243,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                 innerFitnessEvaluator,
                 SelectiveGenomeFitnessEvaluator<NeatGenome>.CreatePredicate_OnceOnly());
 
+            
             // Initialize the evolution algorithm
             ea.Initialize(selectiveFitnessEvaluator, genomeFactory, genomeList);
 
