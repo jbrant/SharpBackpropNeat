@@ -36,7 +36,7 @@ namespace SharpNeat.Decoders.HyperNeat
         readonly NetworkActivationScheme _activationSchemeSubstrate;
         readonly bool _lengthCppnInput;
 
-        delegate IBlackBox DecodeCppnGenome(NeatGenome genome);
+        public delegate IBlackBox DecodeCppnGenome(NeatGenome genome);
         readonly DecodeCppnGenome _decodeCppnMethod;
 
         delegate IBlackBox CreateSubstrateNetwork(INetworkDefinition networkDef);
@@ -76,6 +76,16 @@ namespace SharpNeat.Decoders.HyperNeat
             _lengthCppnInput = lengthCppnInput;
         }
 
+        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        #region Changes for Autoencoder Generation and testing
+        public DecodeCppnGenome GeCPPNGenomeDecoder()
+        {
+            return _decodeCppnMethod;
+        }
         #endregion
 
         #region IGenomeDecoder Members

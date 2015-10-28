@@ -50,7 +50,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
             // The maximum fitness ends up being the product of the number of validation samples 
             // and the number of input nodes (i.e. the image resolution)
-            _maxFitness = _validationImageSamples.Count*imageResolution;
+            _maxFitness = _validationImageSamples.Count*imageResolution / (reduceAmountPerSide * reduceAmountPerSide);
         }
 
         #endregion
@@ -147,7 +147,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                         phenome.OutputSignalArray);
                 }
 
-                if ((_maxFitness - errorSum) / _maxFitness * 100 > 99f)
+                if ((_maxFitness - errorSum) / _maxFitness * 100 > 99.5f)
                 {
                     fitness = (_numBackpropIterations - iter) * 100f + ((_maxFitness - errorSum) / _maxFitness * 100 - 99f) * 100;
                     return new FitnessInfo(fitness, fitness);
@@ -181,7 +181,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             // Calculate the fitness as the difference between the maximum possible fitness 
             // and the sum of the errors on the validation set
             //double fitness = Math.Max(0, ((_maxFitness - errorSum)/ _maxFitness * 100))*10;
-            fitness = (_maxFitness - errorSum) / _maxFitness * 100;
+            fitness = Math.Max(0, (_maxFitness - errorSum) / _maxFitness * 100);
             return new FitnessInfo(fitness, fitness);
         }
 
@@ -200,6 +200,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             #region Backpropagate error for the specified number of iterations
             for (int iter = 0; iter < _numBackpropIterations; iter++)
             {
+                errorSum = 0;
                 // Evaluate on each training sample
                 foreach (double[] trainingImageSample in _trainingImageSamples)
                 {
@@ -216,8 +217,10 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
                     phenome.Activate();
 
                     // Calculate the overall error based on how closely the outputs match the inputs
-                    phenome.CalculateError(_learningRate);
+                    //errorSum += phenome.CalculateError(_learningRate);
                 }
+                double maxFitTrain = _trainingImageSamples.Count * _trainingImageSamples[0].Length;
+                fitness = (maxFitTrain - errorSum) / maxFitTrain * 100;
             }
             #endregion
 
@@ -246,7 +249,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             // Calculate the fitness as the difference between the maximum possible fitness 
             // and the sum of the errors on the validation set
             //double fitness = Math.Max(0, ((_maxFitness - errorSum)/ _maxFitness * 100))*10;
-            fitness = (_maxFitness - errorSum) / _maxFitness * 100;
+            fitness = Math.Max(0, (_maxFitness - errorSum) / _maxFitness * 100);
             return new FitnessInfo(fitness, fitness);
         }
 

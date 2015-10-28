@@ -86,7 +86,7 @@ namespace SharpNeat.Utility
                 {
                     // Get the numeric intensity of the grayscale pixel
                     int numericColor = (int)(imageData[heightIdx * sideLength + widthIdx] * 255);
-
+                    numericColor = Math.Min(255, Math.Max(0, numericColor));
                     // Create the color (grayscale) component
                     Color pixelColor = Color.FromArgb(numericColor, numericColor, numericColor);
 

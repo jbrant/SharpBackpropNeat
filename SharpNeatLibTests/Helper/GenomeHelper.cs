@@ -88,9 +88,37 @@ namespace SharpNeatLibTests.Helper
         /// <param name="lengthCppnInput">Indicates if the CPPNs being decoded have an extra input for specifying connection length.</param>
         public static IGenomeDecoder<NeatGenome, IBlackBox> CreateGenomeDecoder(int visualFieldResolution, bool lengthCppnInput = false)
         {
+            // Construct substrate.
+            Substrate substrate = CreateSubstrate(visualFieldResolution, lengthCppnInput);
+
+            // Create genome decoder. Decodes to a neural network packaged with an activation scheme that defines a fixed number of activations per evaluation.
+            IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = new HyperNeatDecoder(substrate, NetworkActivationScheme.CreateCyclicFixedTimestepsScheme(4), NetworkActivationScheme.CreateAcyclicScheme(), lengthCppnInput);
+            return genomeDecoder;
+        }
+
+        /// <summary>
+        /// Creates a genome decoder. We split this code into a separate  method so that it can be re-used by the problem domain visualization code
+        /// (it needs to decode genomes to phenomes in order to create a visualization).
+        /// </summary>
+        /// <param name="substrate">The substrate used for the HyperNeatDecoder.</param>
+        /// <param name="lengthCppnInput">Indicates if the CPPNs being decoded have an extra input for specifying connection length.</param>
+        public static IGenomeDecoder<NeatGenome, IBlackBox> CreateGenomeDecoder(Substrate substrate, bool lengthCppnInput = false)
+        {
+            // Create genome decoder. Decodes to a neural network packaged with an activation scheme that defines a fixed number of activations per evaluation.
+            IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = new HyperNeatDecoder(substrate, NetworkActivationScheme.CreateCyclicFixedTimestepsScheme(4), NetworkActivationScheme.CreateAcyclicScheme(), lengthCppnInput);
+            return genomeDecoder;
+        }
+
+        /// <summary>
+        /// Creates a substrate to use to create network defintions/the genome decoder.
+        /// </summary>
+        /// <param name="visualFieldResolution">The visual field's pixel resolution, e.g. 11 means 11x11 pixels.</param>
+        /// <param name="lengthCppnInput">Indicates if the CPPNs being decoded have an extra input for specifying connection length.</param>
+        public static Substrate CreateSubstrate(int visualFieldResolution, bool lengthCppnInput = false)
+        {
             // Create two layer 'sandwich' substrate.
             int pixelCount = visualFieldResolution * visualFieldResolution;
-            double pixelSize = 2 / visualFieldResolution;
+            double pixelSize = 2.0 / visualFieldResolution;
             double originPixelXY = -1 + (pixelSize / 2.0);
 
             SubstrateNodeSet inputLayer = new SubstrateNodeSet(pixelCount);
@@ -121,11 +149,7 @@ namespace SharpNeatLibTests.Helper
 
             // Construct substrate.
             Substrate substrate = new Substrate(nodeSetList, DefaultActivationFunctionLibrary.CreateLibraryNeat(SteepenedSigmoid.__DefaultInstance), 0, 0.2, 5, nodeSetMappingList);
-
-            // Create genome decoder. Decodes to a neural network packaged with an activation scheme that defines a fixed number of activations per evaluation.
-            IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder = new HyperNeatDecoder(substrate, NetworkActivationScheme.CreateCyclicFixedTimestepsScheme(4), NetworkActivationScheme.CreateAcyclicScheme(), lengthCppnInput);
-            return genomeDecoder;
+            return substrate;
         }
-
     }
 }

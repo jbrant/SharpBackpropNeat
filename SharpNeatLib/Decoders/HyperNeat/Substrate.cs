@@ -232,16 +232,17 @@ namespace SharpNeat.Decoders.HyperNeat
             ISignalArray inputSignalArr = blackbox.InputSignalArray;
             ISignalArray outputSignalArr = blackbox.OutputSignalArray;
             ConnectionList networkConnList = new ConnectionList(_connectionCountHint);
-            int lengthInputIdx = _dimensionality + _dimensionality;
+            int lengthInputIdx = inputSignalArr.Length - 1;
 
             foreach(SubstrateConnection substrateConn in connectionSequence)
             {
+                int layerToLayerAdder = ((int)substrateConn._tgtNode._position[2] * 3);
                 // Assign the connection's endpoint position coords to the CPPN/blackbox inputs. Note that position dimensionality is not fixed.
-                for(int i=0; i<_dimensionality; i++) 
+                for(int i=0; i<_dimensionality - 1; i++) 
                 {
                     inputSignalArr[i] = substrateConn._srcNode._position[i];
-                    inputSignalArr[i + _dimensionality] = substrateConn._tgtNode._position[i];
-                    inputSignalArr[i + 2 * _dimensionality] = Math.Abs(substrateConn._srcNode._position[i] - substrateConn._tgtNode._position[i]);
+                    inputSignalArr[i + _dimensionality - 1] = substrateConn._tgtNode._position[i];
+                    inputSignalArr[i + 2 * (_dimensionality - 1)] = Math.Abs(substrateConn._srcNode._position[i] - substrateConn._tgtNode._position[i]);
                 }
 
                 // Optional connection length input.
@@ -254,15 +255,15 @@ namespace SharpNeat.Decoders.HyperNeat
                 blackbox.Activate();
 
                 // Read connection weight from output 0.
-                double weight = outputSignalArr[0];
+                double weight = outputSignalArr[0 + layerToLayerAdder];
 
                 // Skip connections with a weight magnitude less than _weightThreshold.
                 double weightAbs = Math.Abs(weight);
-                if(weightAbs > _weightThreshold)
+                if (outputSignalArr[2 + layerToLayerAdder] >= 0)
                 {
                     // For weights over the threshold we re-scale into the range [-_maxWeight,_maxWeight],
                     // assuming IBlackBox outputs are in the range [-1,1].
-                    weight = (weightAbs - _weightThreshold) * _weightRescalingCoeff * Math.Sign(weight);
+                    weight = (weightAbs) * _weightRescalingCoeff * Math.Sign(weight);
 
                     // Create network definition connection and add to list.
                     networkConnList.Add(new NetworkConnection(substrateConn._srcNode._id,
@@ -281,10 +282,10 @@ namespace SharpNeat.Decoders.HyperNeat
                 foreach(SubstrateNode node in nodeSet.NodeList)
                 {
                     // Assign the node's position coords to the blackbox inputs. The CPPN inputs for source node coords are set to zero when obtaining bias values.
-                    for(int j=0; j<_dimensionality; j++)
+                    for(int j=0; j<_dimensionality - 1; j++)
                     {
                         inputSignalArr[j] = 0.0;
-                        inputSignalArr[j + _dimensionality] = node._position[j];
+                        inputSignalArr[j + _dimensionality - 1] = node._position[j];
                     }
 
                     // Optional connection length input.
@@ -297,7 +298,7 @@ namespace SharpNeat.Decoders.HyperNeat
                     blackbox.Activate();
 
                     // Read bias connection weight from output 1.
-                    double weight = outputSignalArr[1];
+                    double weight = outputSignalArr[1+ (i- 1) * 3];
 
                     // Skip connections with a weight magnitude less than _weightThreshold.
                     double weightAbs = Math.Abs(weight);

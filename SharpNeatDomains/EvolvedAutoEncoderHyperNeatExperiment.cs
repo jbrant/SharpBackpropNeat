@@ -33,6 +33,7 @@ using SharpNeat.Phenomes;
 using SharpNeat.SpeciationStrategies;
 using System.Threading.Tasks;
 using SharpNeat.Domains.EvolvedAutoencoder;
+using SharpNeat.Genomes.AutoencoderNeat;
 
 namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
 {
@@ -117,16 +118,16 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
         /// </summary>
         public int InputCount
         {
-            get { return _lengthCppnInput ? 10 : 9; }
+            get { return _lengthCppnInput ? 7 : 6; }
         }
 
         /// <summary>
         /// Gets the number of outputs required by the network/black-box that the underlying problem domain is based on.
-        /// 2 outputs.CPPN weight output and bias weight output.
+        /// 3 outputs per layer pairs. weight bias, and threshold for the weight to appear(LEO)
         /// </summary>
         public int OutputCount
         {
-            get { return 2; }
+            get { return 6; }
         }
 
         /// <summary>
@@ -221,7 +222,7 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
         /// </summary>
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
-             return new CppnGenomeFactory(InputCount, OutputCount, GetCppnActivationFunctionLibrary(), _neatGenomeParams);
+             return new CppnAutoencoderGenomeFactory(InputCount, OutputCount, GetCppnActivationFunctionLibrary(), _neatGenomeParams);
         }
 
         /// <summary>
@@ -271,7 +272,7 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
 
             // Create IBlackBox evaluator.
             EvolvedAutoencoderEvaluator evaluator = new EvolvedAutoencoderEvaluator(_trainingImagesFilename,
-                _visualFieldPixelCount/(_resolutionReductionPerSide* _resolutionReductionPerSide), _numImageSamples, _learningRate, _numBackpropIterations, _trainingSampleProportion, _resolutionReductionPerSide);
+                _visualFieldPixelCount, _numImageSamples, _learningRate, _numBackpropIterations, _trainingSampleProportion, _resolutionReductionPerSide);
 
             // Create genome decoder. Decodes to a neural network packaged with an activation scheme that defines a fixed number of activations per evaluation.
             IGenomeDecoder<NeatGenome,IBlackBox> genomeDecoder = CreateGenomeDecoder(_visualFieldResolution/ _resolutionReductionPerSide, _lengthCppnInput);
@@ -341,7 +342,7 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
         {
             // Create two layer 'sandwich' substrate.
             int pixelCount = visualFieldResolution * visualFieldResolution;
-            double pixelSize = 2 / visualFieldResolution;
+            double pixelSize = 2.0 / visualFieldResolution;
             double originPixelXY = -1 + (pixelSize/2.0);
 
             SubstrateNodeSet inputLayer = new SubstrateNodeSet(pixelCount);
@@ -357,10 +358,15 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
             for(int y=0; y<visualFieldResolution; y++, yReal += pixelSize)
             {
                 double xReal = originPixelXY;
-                for(int x=0; x<visualFieldResolution; x++, xReal += pixelSize, inputId++, outputId++, hiddenId++)
+                for (int x = 0; x < visualFieldResolution; x++, xReal += pixelSize, inputId++, outputId++, hiddenId++)
                 {
-                    inputLayer.NodeList.Add(new SubstrateNode(inputId, new double[] {xReal, yReal, -1.0}));
-                    //HiddenLayer.NodeList.Add(new SubstrateNode(hiddenId, new double[] { xReal, yReal, 0 }));
+                    //CJR: I leave the thrid dimintion in,cause I can ignore it when I'm adding inputs to the CPPN
+                    //but use it to dicate what set of outputs to use
+                    inputLayer.NodeList.Add(new SubstrateNode(inputId, new double[] { xReal, yReal, -1.0}));
+                    if ((x % 2 == 0 && y % 2 == 0) || ((x + 1) % 2 == 0 && (y + 1) % 2 == 0))
+                    {
+                        HiddenLayer.NodeList.Add(new SubstrateNode(hiddenId, new double[] { xReal, yReal, 0}));
+                    }
                     outputLayer.NodeList.Add(new SubstrateNode(outputId, new double[] {xReal, yReal, 1.0}));
                 }
             }
@@ -368,11 +374,13 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
             List<SubstrateNodeSet> nodeSetList = new List<SubstrateNodeSet>(3);
             nodeSetList.Add(inputLayer);
             nodeSetList.Add(outputLayer);
-            //nodeSetList.Add(HiddenLayer);
+            nodeSetList.Add(HiddenLayer);
 
+            //CJR: Fist and second layer must be input/output respectively to be validated by the substrate, so hidden is third
             // Define connection mappings between layers/sets.
-            List<NodeSetMapping> nodeSetMappingList = new List<NodeSetMapping>(1);
-            nodeSetMappingList.Add(NodeSetMapping.Create(0, 1,(double?)null));
+            List<NodeSetMapping> nodeSetMappingList = new List<NodeSetMapping>(3);
+            nodeSetMappingList.Add(NodeSetMapping.Create(0, 2,(double?)null));
+            nodeSetMappingList.Add(NodeSetMapping.Create(2, 1, (double?)null));
 
             // Construct substrate.
             Substrate substrate = new Substrate(nodeSetList, DefaultActivationFunctionLibrary.CreateLibraryNeat(SteepenedSigmoid.__DefaultInstance), 0, 0.2, 5, nodeSetMappingList);
