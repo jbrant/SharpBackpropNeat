@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helper\GenomeHelper.cs" />
+    <Compile Include="Phenomes\NeuralNets\AcyclicNetwork\BackPropTests.cs" />
     <Compile Include="Phenomes\NeuralNets\AcyclicNetwork\FastAcyclicNetworkTests.cs" />
     <Compile Include="Phenomes\NeuralNets\AcyclicNetwork\HyperNEATAutoEncoderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,8 +71,8 @@
   <ItemGroup>
     <Content Include="Resources\3In-2Hidden-2Out.gnm.xml" />
     <Content Include="Resources\3In-2Hidden-1Out.gnm.xml" />
-    <Content Include="Resources\5Out-3Hidden-5Out.gnm.xml" />
     <Content Include="Resources\2In-2Hidden-1Out.gnm.xml" />
+    <Content Include="Resources\5Out5In.gnm.xml" />
     <Content Include="Resources\BestGenome9600.gnm.xml" />
     <Content Include="Resources\champ_77,22_20151013_143931.gnm.xml" />
     <Content Include="Resources\Genome_99_35.gnm.xml" />

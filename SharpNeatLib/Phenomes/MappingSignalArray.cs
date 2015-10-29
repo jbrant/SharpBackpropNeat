@@ -30,7 +30,7 @@ namespace SharpNeat.Phenomes
     public class MappingSignalArray : ISignalArray
     {
         readonly double[] _wrappedArray;
-        readonly int[] _map;
+        public readonly int[] _map;
 
         #region Constructor
 

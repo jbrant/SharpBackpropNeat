@@ -9,6 +9,10 @@ using SharpNeatLibTests.Helper;
 using System.Collections.Generic;
 using SharpNeat.Utility;
 using System.Linq;
+using SharpNeat.Decoders.HyperNeat;
+using SharpNeat.Core;
+using SharpNeat.Network;
+using System.Xml;
 
 #endregion
 
@@ -19,45 +23,52 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
     {
         private const string _genomeFileIn = "/Resources/CPPNS/NewToTest.gnm.xml";
         private const string _genomeFileOut = "/Resources/CPPNS/Out/champ_77,22_20151013_143931.gnm.xml";
+        private const string _substrateFileOut = "/Resources/CPPNS/Out/substrate.gnm.xml";
         private string _inputFilePath;
+        private Substrate _substrate;
+        private HyperNeatDecoder _genomeDecoder;
+        private int _visualFieldResolution = 28;
+        private int _reduceAmountPerSide = 4;
+        private int _inputNeuronCount = 7;
+        private int _outpurNeuronCount = 6;
+        private double _learningRate = 1;
+        private string _trainingImagesPath = @"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data";
 
         [TestInitialize]
         public void SetupTest()
         {
             _inputFilePath = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + _genomeFileIn;
+            _substrate = GenomeHelper.CreateSubstrate(_visualFieldResolution / _reduceAmountPerSide);
+            _genomeDecoder = (HyperNeatDecoder) GenomeHelper.CreateGenomeDecoder(_substrate);
         }
 
         [TestMethod]
         public void SaveImagesAsBPRuns()
         {
-            SaveImagesAsBPRuns(@"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data",
-                28, 100, 2, 100);
+            SaveImagesAsBPRuns(100, 50);
         }
-
+        
         /// <summary>
         /// Create a network(from a CPPN) and runs back BP on it @loopNum times. It also saves the image created every 10th of the way through the problem
         /// ASSUME THE IMAGES TRAINED ON ARE SQUARES
         /// </summary>
-        /// <param name="trainingImagesPath"> the location of the images to train on</param>
-        /// <param name="visualFieldResolution">the size of one side of the square images provided in @trainingImagesPath</param>
         /// <param name="numImageSamples">Number of images samples to train on</param>
-        /// <param name="reduceAmountPerSide">Reduce the resolution of eahc side by this value(MUST DIVIDE EVENLY, RECOMMENDED VALUE OF 2)</param>
-        public void SaveImagesAsBPRuns(string trainingImagesPath, int visualFieldResolution, int numImageSamples, int reduceAmountPerSide, int loopNum)
+        public void SaveImagesAsBPRuns(int numImageSamples, int loopNum)
         {
             // Read in the NEAT genome
-            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, 10, 2);
-            IBlackBox phenome = GenomeHelper.CreateGenomeDecoder(visualFieldResolution / reduceAmountPerSide).Decode(cppnGenome);
+            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, _inputNeuronCount, _outpurNeuronCount);
+            IBlackBox phenome = _genomeDecoder.Decode(cppnGenome);
             // Decode the genome to an acyclic network
 
             double errorSum = 0;
-            double maxFitness = numImageSamples * visualFieldResolution * visualFieldResolution;
-            List<double[]> allImageSamples = ImageIoUtils.ReadImage(trainingImagesPath, visualFieldResolution * visualFieldResolution, numImageSamples, 255);
-            allImageSamples = ImageIoUtils.ReduceImages(allImageSamples, reduceAmountPerSide, visualFieldResolution);
+            double maxFitness = 1 * _visualFieldResolution * _visualFieldResolution/(_reduceAmountPerSide *_reduceAmountPerSide);
+            List<double[]> allImageSamples = ImageIoUtils.ReadImage(_trainingImagesPath, _visualFieldResolution * _visualFieldResolution, numImageSamples, 255);
+            allImageSamples = ImageIoUtils.ReduceImages(allImageSamples, _reduceAmountPerSide, _visualFieldResolution);
 
             double oldError = 10000;
             for (int i = 0; i < loopNum; i++)
             {
-                double[] trainingImageSample = allImageSamples[i % numImageSamples];
+                double[] trainingImageSample = allImageSamples[1];
                 phenome.ResetState(); ;
 
                 // Load the network inputs
@@ -65,41 +76,27 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
                 {
                     phenome.InputSignalArray[pixelIdx] = trainingImageSample[pixelIdx];
                 }
+
                 // After inputs have been loaded, activate the network
                 phenome.Activate();
-                errorSum += BackpropagationUtils.CalculateOutputError(phenome.InputSignalArray,
+                errorSum = BackpropagationUtils.CalculateOutputError(phenome.InputSignalArray,
                 phenome.OutputSignalArray);
 
-                phenome.Activate();
-                if (i % (loopNum/10) == 0)
+                //System.Diagnostics.Debug.WriteLine((maxFitness - errorSum) / maxFitness * 100);
+                if (loopNum / 10 == 0 || i % (loopNum/10) == 0)
                 {
-                    ImageIoUtils.WriteImage(@"DataBPOut/Example" + (i++)/(loopNum/10) + ".bmp", phenome.OutputSignalArray);
+                    ImageIoUtils.WriteImage(@"DataBPOut/Example" + (i) + ".bmp", phenome.OutputSignalArray);
+                    System.Diagnostics.Debug.WriteLine("\n" + i + "Error: " + errorSum);
                 }
-                double newError = phenome.CalculateError(4) * 100000;
+                double newError = phenome.CalculateError(_learningRate) * 100000;
                 if (newError > oldError)
                 {
-                    System.Diagnostics.Debug.WriteLine("\n\n\n\n\n\n\n\newError > oldError: " + i);
+                    System.Diagnostics.Debug.WriteLine("\n\nnewError > oldError: " + i);
+                    //Assert.IsTrue(newError < oldError);
                 }
 
-                if (i % (loopNum/ 10) == 0)
-                {
-                    // Activate the network
-                    System.Diagnostics.Debug.WriteLine("\nError: " + newError);
-
-                }
                 oldError = newError;
             }
-
-            #region Save Resulting Genome
-            /*
-            string pathForFullyConnected = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/FullConnected2Reduced_ForTest_DONTDELETE_DONTUSE.gnm.xml";
-            NeatGenome genomeToSave = GenomeHelper.ReadStandardGenome(pathForFullyConnected, 14 * 14, 14 * 14);
-            FastAcyclicNetwork networkForSave = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genomeToSave);
-
-            GenomeHelper.ChangeGenomeWeights(genomeToSave, ((FastAcyclicNetwork)phenome)._connectionArr);
-            GenomeHelper.WriteNeatGenome(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/SavedAfterBPGenomes/FullConnected2Reduced_SavedAfterNPTest.gnm.xml", genomeToSave);
-            */
-            #endregion
         }
 
         [TestMethod]
@@ -109,7 +106,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
            //     visualFieldResolution: 28, numImageSamples: 50, reduceAmountPerSide: 2, trainingSampleProportion: .8, numBackpropIterations: 100, learningRate: 1);
 
             RunBPUntilThresholdIsPassedThenSave(@"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data",
-                visualFieldResolution: 28, numImageSamples: 50, reduceAmountPerSide: 2, trainingSampleProportion: .8, numBackpropIterations: 100, learningRate: 1, leavingThreshold: .99);
+                visualFieldResolution: 28, numImageSamples: 100, reduceAmountPerSide: 2, trainingSampleProportion: .8, numBackpropIterations: 1, learningRate: .01, leavingThreshold: 1);
         }
 
         /// <summary>
@@ -121,7 +118,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
         public void SaveUpdatedVersionOfEachImage(string trainingImagesPath, int visualFieldResolution, int numImageSamples, int reduceAmountPerSide, double trainingSampleProportion, int numBackpropIterations, double learningRate)
         {
             // Read in the NEAT genome
-            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, 6, 2);
+            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, _inputNeuronCount, _outpurNeuronCount);
             IBlackBox phenome = GenomeHelper.CreateGenomeDecoder(visualFieldResolution/ reduceAmountPerSide).Decode(cppnGenome);
             // Decode the genome to an acyclic network
 
@@ -192,17 +189,6 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
                 ImageIoUtils.WriteImage(@"DataOut/Example" + i++ + "V.bmp", phenome.OutputSignalArray);
             }
             System.Diagnostics.Debug.WriteLine((maxFitness - errorSum)/ maxFitness * 100);
-
-            #region Save Resulting Genome
-            /*
-            string pathForFullyConnected = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/FullConnected2Reduced_ForTest_DONTDELETE_DONTUSE.gnm.xml";
-            NeatGenome genomeToSave = GenomeHelper.ReadStandardGenome(pathForFullyConnected, 14 * 14, 14 * 14);
-            FastAcyclicNetwork networkForSave = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genomeToSave);
-
-            GenomeHelper.ChangeGenomeWeights(genomeToSave, ((FastAcyclicNetwork)phenome)._connectionArr);
-            GenomeHelper.WriteNeatGenome(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/SavedAfterBPGenomes/FullConnected2Reduced_SavedAfterNPTest.gnm.xml", genomeToSave);
-            */
-            #endregion
         }
 
         /// <summary>
@@ -215,7 +201,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
         public void RunBPUntilThresholdIsPassedThenSave(string trainingImagesPath, int visualFieldResolution, int numImageSamples, int reduceAmountPerSide, double trainingSampleProportion, int numBackpropIterations, double learningRate, double leavingThreshold)
         {
             // Read in the NEAT genome
-            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, 10, 2);
+            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, _inputNeuronCount, _outpurNeuronCount);
             IBlackBox phenome = GenomeHelper.CreateGenomeDecoder(visualFieldResolution / reduceAmountPerSide).Decode(cppnGenome);
             // Decode the genome to an acyclic network
 
@@ -275,7 +261,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
                 if (fitnessPerc > leavingThreshold)
                 {
                     System.Diagnostics.Debug.WriteLine("Leaving at iteration: " + iter +" With threshold: " + leavingThreshold);
-                    break;
+                    //break;
                 }
             }
 
@@ -316,17 +302,9 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
                 ImageIoUtils.WriteImage(@"DataOut/Example" + i++ + "V.bmp", phenome.OutputSignalArray);
             }
             System.Diagnostics.Debug.WriteLine((maxFitness - errorSum) / maxFitness * 100);
-            #region Save Resulting Genome
-
-            string pathForFullyConnected = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/FullConnected2Reduced_ForTest_DONTDELETE_DONTUSE.gnm.xml";
-            NeatGenome genomeToSave = GenomeHelper.ReadStandardGenome(pathForFullyConnected, 14 * 14, 14 * 14);
-            FastAcyclicNetwork networkForSave = FastAcyclicNetworkFactory.CreateFastAcyclicNetwork(genomeToSave);
-
-            GenomeHelper.ChangeGenomeWeights(genomeToSave, ((FastAcyclicNetwork)phenome)._connectionArr);
-            GenomeHelper.WriteNeatGenome(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + @"/Resources/SavedAfterBPGenomes/FullConnected2Reduced_SavedAfterNPTest.gnm.xml", genomeToSave);
-            #endregion
         }
 
+        #region Base Functionality
         /// <summary>
         /// Reads in images and saves those images
         /// If there's an error, you need to create the associated folder
@@ -334,14 +312,31 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
         [TestMethod]
         public void PureInputAndOutputForComparison()
         {
-            List<double[]> allImageSamples = ImageIoUtils.ReadImage(@"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data", 28 * 28, 20, 255);
+            List<double[]> allImageSamples = ImageIoUtils.ReadImage(_trainingImagesPath, _visualFieldResolution * _visualFieldResolution, 20, 255);
 
-            allImageSamples = ImageIoUtils.ReduceImages(allImageSamples, 2, 28);
+            allImageSamples = ImageIoUtils.ReduceImages(allImageSamples, _reduceAmountPerSide, _visualFieldResolution);
             int i = 0;
             foreach (double[] trainingImageSample in allImageSamples)
             {
                 ImageIoUtils.WriteImage(@"DataIn/Example" + i++ + ".bmp", trainingImageSample);
             }
         }
+
+        /// <summary>
+        /// Save a network definition created from a CPPN
+        /// </summary>
+        [TestMethod]
+        public void SaveSubstrateFromGenome()
+        {
+            NeatGenome cppnGenome = GenomeHelper.ReadCPPNGenome(_inputFilePath, 10, 3);
+            IBlackBox phenome = _genomeDecoder.GeCPPNGenomeDecoder()(cppnGenome);
+
+            string pathForFullyConnected = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())) + _substrateFileOut;
+            XmlWriter writer = XmlWriter.Create(pathForFullyConnected);
+            INetworkDefinition def = _substrate.CreateNetworkDefinition(phenome, true);
+            NetworkXmlIO.WriteComplete(writer, def, true);
+            writer.Close();
+        }
+        #endregion
     }
 }

@@ -76,6 +76,7 @@
     <Compile Include="Core\IMinimalCriteria.cs" />
     <Compile Include="Core\INoveltyArchive.cs" />
     <Compile Include="Genomes\AutoencoderNeat\AutoencoderGenomeFactory.cs" />
+    <Compile Include="Genomes\AutoencoderNeat\CppnAutoencoderGenomeFactory.cs" />
     <Compile Include="MinimalCriterias\EuclideanLocationCriteria.cs" />
     <Compile Include="NoveltyArchives\AbstractNoveltyArchive.cs" />
     <Compile Include="Core\EvaluationType.cs" />

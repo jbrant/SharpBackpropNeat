@@ -201,13 +201,28 @@ namespace SharpNeat.Phenomes.NeuralNets
 
                 // Push signals through the previous layer's connections to the current layer's nodes.
                 for(; conIdx < layerInfo._endConnectionIdx; conIdx++) {
+
+                    double useVal3 = _activationArr[_connectionArr[conIdx]._srcNeuronIdx];
+
+                    double useVal4 = _activationArr[_connectionArr[conIdx]._tgtNeuronIdx];
                     _activationArr[_connectionArr[conIdx]._tgtNeuronIdx] += _activationArr[_connectionArr[conIdx]._srcNeuronIdx] * _connectionArr[conIdx]._weight;
+                    double useVal5 = _activationArr[_connectionArr[conIdx]._tgtNeuronIdx];
+                    if (useVal3 != useVal5)
+                    {
+                        useVal5 = 0;
+                    }
                 }
 
                 // Activate current layer's nodes.
                 layerInfo = _layerInfoArr[layerIdx];
                 for(; nodeIdx < layerInfo._endNodeIdx; nodeIdx++) {
+                    double useVal = _activationArr[nodeIdx];
                     _activationArr[nodeIdx] = _nodeActivationFnArr[nodeIdx].Calculate(_activationArr[nodeIdx], _nodeAuxArgsArr[nodeIdx]);
+                    double useVal2 = _activationArr[nodeIdx];
+                    if (useVal != useVal2)
+                    {
+                        useVal = 0;
+                    }
                 }
             }
         }
@@ -225,11 +240,11 @@ namespace SharpNeat.Phenomes.NeuralNets
 
             // Calculate the node errors
             double[] nodeErrors = BackpropagationUtils.CalculateErrorSignals(_layerInfoArr, _connectionArr,
-                _activationArr, targets, _nodeActivationFnArr);
+                _activationArr, _outputSignalArrayWrapper, targets, _nodeActivationFnArr);
 
             // Backpropagate the errors and update the weights
             BackpropagationUtils.BackpropagateError(_layerInfoArr, _connectionArr, learningRate, nodeErrors,
-                _activationArr);
+                _activationArr, (MappingSignalArray) _outputSignalArrayWrapper);
 
             return BackpropagationUtils.CalculateOverallError(nodeErrors);
         }
@@ -248,11 +263,11 @@ namespace SharpNeat.Phenomes.NeuralNets
 
             // Calculate the node errors
             double[] nodeErrors = BackpropagationUtils.CalculateErrorSignals(_layerInfoArr, _connectionArr,
-                _activationArr, InputSignalArray, _nodeActivationFnArr);
+                _activationArr, _outputSignalArrayWrapper, InputSignalArray, _nodeActivationFnArr);
 
             // Backpropagate the errors and update the weights
             BackpropagationUtils.BackpropagateError(_layerInfoArr, _connectionArr, learningRate, nodeErrors,
-                _activationArr);
+                _activationArr, (MappingSignalArray)_outputSignalArrayWrapper);
 
             return BackpropagationUtils.CalculateOutputError(InputSignalArray, OutputSignalArray);
         }

@@ -110,7 +110,6 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             NeatGenomeParameters = ExperimentUtils.ReadNeatGenomeParameters(xmlConfig);
             NeatGenomeParameters.FeedforwardOnly = _activationScheme.AcyclicNetwork;
             NeatGenomeParameters.ActivationFn = PlainSigmoid.__DefaultInstance;
-            NeatGenomeParameters.DeleteConnectionMutationProbability = NeatGenomeParameters.AddConnectionMutationProbability;
 
             // Read in experiment domain-specific parameters
             _trainingImagesFilename = XmlUtils.TryGetValueAsString(xmlConfig, "TrainingImages");
