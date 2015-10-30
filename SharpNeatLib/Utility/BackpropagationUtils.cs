@@ -28,7 +28,7 @@ namespace SharpNeat.Utility
         /// <param name="nodeActivationFunctions">The activation function for each neuron (this will only differ with HyperNEAT).</param>
         /// <returns>The errors for each output and hidden neuron.</returns>
         public static double[] CalculateErrorSignals(LayerInfo[] layers, FastConnection[] connections,
-            double[] nodeActivationValues, ISignalArray targetValues, IActivationFunction[] nodeActivationFunctions)
+            double[] nodeActivationValues, ISignalArray outputValues, ISignalArray targetValues, IActivationFunction[] nodeActivationFunctions)
         {
             double[] targets = new double[targetValues.Length];
 
@@ -36,7 +36,7 @@ namespace SharpNeat.Utility
             targetValues.CopyTo(targets, 0);
 
             // Return the error signals
-            return CalculateErrorSignals(layers, connections, nodeActivationValues, targets, nodeActivationFunctions);
+            return CalculateErrorSignals(layers, connections, nodeActivationValues, (MappingSignalArray) outputValues, targets, nodeActivationFunctions);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SharpNeat.Utility
         /// <param name="nodeActivationFunctions">The activation function for each neuron (this will only differ with HyperNEAT).</param>
         /// <returns>The errors for each output and hidden neuron.</returns>
         public static double[] CalculateErrorSignals(LayerInfo[] layers, FastConnection[] connections,
-            double[] nodeActivationValues, double[] targetValues, IActivationFunction[] nodeActivationFunctions)
+            double[] nodeActivationValues, MappingSignalArray outputValues, double[] targetValues, IActivationFunction[] nodeActivationFunctions)
         {
             double[] signalErrors = new double[nodeActivationValues.Length];
 
@@ -68,11 +68,30 @@ namespace SharpNeat.Utility
                     // Calculate the error for every output node with respect to its corresponding target value
                     for (; nodeIdx >= layers[layerIdx - 1]._endNodeIdx; nodeIdx--)
                     {
+
+                        //int targetValuesID = outputValues._map[nodeIdx - outputValues.Length - 1] - outputValues.Length - 1;
+                        int targetValuesID = 0;
+                        for (int i = 0; i < targetValues.Length; i++)
+                        {
+                            if (outputValues._map[i] == nodeIdx)
+                            {
+                                targetValuesID = i;
+                                break;
+                            }
+                        }
                         signalErrors[nodeIdx] =
-                            (targetValues[(targetValues.Length - 1) - ((nodeActivationValues.Length - 1) - nodeIdx)] -
+                            (targetValues[targetValuesID] -
                              nodeActivationValues[nodeIdx])*
                             nodeActivationFunctions[nodeIdx].CalculateDerivative(
                                 nodeActivationValues[nodeIdx]);
+                        /*
+                        int targetValuesID = (targetValues.Length - 1) - ((nodeActivationValues.Length - 1) - nodeIdx);
+                            signalErrors[nodeIdx] =
+                                (targetValues[targetValuesID] -
+                                 outputValues[nodeIdx - layers[layerIdx - 1]._endNodeIdx])*
+                                nodeActivationFunctions[nodeIdx].CalculateDerivative(
+                                    outputValues[nodeIdx - layers[layerIdx - 1]._endNodeIdx]);    
+                        */
                     }
                 }
 
@@ -116,7 +135,7 @@ namespace SharpNeat.Utility
         /// <param name="signalErrors">The errors for each output and hidden neuron.</param>
         /// <param name="nodeActivationValues">The activation function for each neuron (this will only differ with HyperNEAT).</param>
         public static void BackpropagateError(LayerInfo[] layers, FastConnection[] connections, double learningRate,
-            double[] signalErrors, double[] nodeActivationValues)
+            double[] signalErrors, double[] nodeActivationValues, MappingSignalArray outputArray)
         {
             int conIdx = 0;
 
@@ -125,15 +144,32 @@ namespace SharpNeat.Utility
             {
                 // Start at one layer below the current layer so we can access the source nodes
                 LayerInfo layerInfo = layers[layerIdx - 1];
-
-                // Calculate the new weight for every connection in the current layer up to the last (i.e. "end") 
-                // connection by adding its current weight to the product of the learning rate, target neuron error, 
-                // and source neuron output
-                for (; conIdx < layerInfo._endConnectionIdx; conIdx++)
+                // Handle the output layer as a special case, calculating the error against the given target
+                if (layerIdx == layers.Length - 1)
                 {
-                    connections[conIdx]._weight = connections[conIdx]._weight +
-                                                  learningRate*signalErrors[connections[conIdx]._tgtNeuronIdx]*
-                                                  nodeActivationValues[connections[conIdx]._srcNeuronIdx];
+                    // Calculate the new weight for every connection in the current layer up to the last (i.e. "end") 
+                    // connection by adding its current weight to the product of the learning rate, target neuron error, 
+                    // and source neuron output
+                    for (; conIdx < layerInfo._endConnectionIdx; conIdx++)
+                    {
+                        //double sigError = signalErrors[outputArray._map[connections[conIdx]._tgtNeuronIdx]];
+                        double sigError = signalErrors[connections[conIdx]._tgtNeuronIdx];
+                        connections[conIdx]._weight = connections[conIdx]._weight +
+                                                      learningRate * sigError *
+                                                      nodeActivationValues[connections[conIdx]._srcNeuronIdx];
+                    }
+                }
+                else
+                {
+                    // Calculate the new weight for every connection in the current layer up to the last (i.e. "end") 
+                    // connection by adding its current weight to the product of the learning rate, target neuron error, 
+                    // and source neuron output
+                    for (; conIdx < layerInfo._endConnectionIdx; conIdx++)
+                    {
+                        connections[conIdx]._weight = connections[conIdx]._weight +
+                                                      learningRate * signalErrors[connections[conIdx]._tgtNeuronIdx] *
+                                                      nodeActivationValues[connections[conIdx]._srcNeuronIdx];
+                    }
                 }
             }
         }
