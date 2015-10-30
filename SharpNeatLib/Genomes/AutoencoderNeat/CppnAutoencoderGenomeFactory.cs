@@ -206,6 +206,21 @@ namespace SharpNeat.Genomes.AutoencoderNeat
                     srcNeuronGeneAC.TargetNeurons.Add(biasGene.TargetNodeId);
                     tgtNeuronGeneAC.SourceNeurons.Add(biasGene.SourceNodeId);
                 }
+
+                srcNeuronGeneAC = inputNeuronGeneList[i];
+                if (!srcNeuronGeneAC.TargetNeurons.Contains(outputNeuronGeneList[5].InnovationId))
+                {
+                    NeuronGene tgtNeuronGeneAC = outputNeuronGeneList[5];
+                    ConnectionGene biasGene = new ConnectionGene(_innovationIdGenerator.NextId,
+                                                                srcNeuronGeneAC.InnovationId,
+                                                                tgtNeuronGeneAC.InnovationId,
+                                                                -Math.Abs(conW));
+                    connectionGeneList.Add(biasGene);
+
+                    // Register connection with endpoint neurons.
+                    srcNeuronGeneAC.TargetNeurons.Add(biasGene.TargetNodeId);
+                    tgtNeuronGeneAC.SourceNeurons.Add(biasGene.SourceNodeId);
+                }
             }
             #endregion
 
