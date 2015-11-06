@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Config>
+  <PopulationSize>250</PopulationSize>
+  <SpecieCount>10</SpecieCount>
+  <ActivationCppn>
+    <Scheme>CyclicFixedIters</Scheme>
+    <Iters>4</Iters>
+  </ActivationCppn>
+  <Activation>
+    <Scheme>Acyclic</Scheme>
+  </Activation>
+  <ComplexityRegulationStrategy>Relative</ComplexityRegulationStrategy>
+  <ComplexityThreshold>10</ComplexityThreshold>
+  <LengthCppnInput>true</LengthCppnInput>
+  <Resolution>28</Resolution>
+  <ResolutionReductionPerSide>4</ResolutionReductionPerSide>
+  <GenomeConfig>
+    <InitialConnectionProportion>.3</InitialConnectionProportion>
+    <WeightMutationProbability>.9</WeightMutationProbability>
+    <AddConnnectionProbability>0.1</AddConnnectionProbability>
+    <AddNodeProbability>.1</AddNodeProbability>
+  </GenomeConfig>
+  <TrainingImages>F:\User Data\Jonathan\Documents\school\Jonathan\Graduate\PhD\Development\C# NEAT\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data</TrainingImages>
+  <NumImageSamples>100</NumImageSamples>
+  <LearningRate>1</LearningRate>
+  <NumBackpropagationIterations>50</NumBackpropagationIterations>
+  <TrainingSampleProportion>0.8</TrainingSampleProportion>
+  <Description>
+    CAP 6616, generating an Autoencoder with HyperNEAT
+  </Description>
+</Config>

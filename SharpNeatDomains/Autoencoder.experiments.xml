@@ -81,7 +81,7 @@
         <AddConnnectionProbability>0.1</AddConnnectionProbability>
         <AddNodeProbability>.1</AddNodeProbability>
       </GenomeConfig>
-      <TrainingImages>C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data</TrainingImages>
+      <TrainingImages>F:\User Data\Jonathan\Documents\school\Jonathan\Graduate\PhD\Development\C# NEAT\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data</TrainingImages>
       <NumImageSamples>100</NumImageSamples>
       <LearningRate>1</LearningRate>
       <NumBackpropagationIterations>50</NumBackpropagationIterations>
