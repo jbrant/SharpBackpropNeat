@@ -82,7 +82,7 @@ namespace SharpNeatConsole
 
             for (int curRun = 0; curRun < numRuns; curRun++)
             {
-                _logFilesBaseName += '_' + curRun;
+                _logFilesBaseName += "_Run" + (curRun + 1).ToString() + '_';
 
                 // Confiure log file writer
                 string logFilename = _logFilesBaseName + '_' + DateTime.Now.ToString("yyyyMMdd") + ".log";
