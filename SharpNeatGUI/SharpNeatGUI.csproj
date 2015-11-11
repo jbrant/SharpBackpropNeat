@@ -163,6 +163,10 @@
       <Project>{73AB8C8C-6315-4DC7-A3DE-3C747F86AC78}</Project>
       <Name>SharpNeatDomains</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharpNeatLibTests\SharpNeatLibTests.csproj">
+      <Project>{db0995eb-55c4-4cdc-8466-b088d2395f03}</Project>
+      <Name>SharpNeatLibTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpNeatViewLib\SharpNeatViewLib.csproj">
       <Project>{4EA80D7B-B680-4AB8-BC4A-B51AF33A3FDE}</Project>
       <Name>SharpNeatViewLib</Name>

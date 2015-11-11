@@ -34,6 +34,7 @@ using SharpNeat.SpeciationStrategies;
 using System.Threading.Tasks;
 using SharpNeat.Domains.EvolvedAutoencoder;
 using SharpNeat.Genomes.AutoencoderNeat;
+using SharpNeatLibTests.Helper;
 
 namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
 {
@@ -338,56 +339,9 @@ namespace SharpNeat.Domains.EvolvedAutoEncoderHyperNeat
         /// </summary>
         /// <param name="visualFieldResolution">The visual field's pixel resolution, e.g. 11 means 11x11 pixels.</param>
         /// <param name="lengthCppnInput">Indicates if the CPPNs being decoded have an extra input for specifying connection length.</param>
-        public IGenomeDecoder<NeatGenome,IBlackBox> CreateGenomeDecoder(int visualFieldResolution, bool lengthCppnInput)
+        public static IGenomeDecoder<NeatGenome,IBlackBox> CreateGenomeDecoder(int visualFieldResolution, bool lengthCppnInput)
         {
-            // Create two layer 'sandwich' substrate.
-            int pixelCount = visualFieldResolution * visualFieldResolution;
-            double pixelSize = 2.0 / visualFieldResolution;
-            double originPixelXY = -1 + (pixelSize/2.0);
-
-            SubstrateNodeSet inputLayer = new SubstrateNodeSet(pixelCount);
-            SubstrateNodeSet HiddenLayer = new SubstrateNodeSet(pixelCount);
-            SubstrateNodeSet outputLayer = new SubstrateNodeSet(pixelCount);
-
-            // Node IDs start at 1. (bias node is always zero).
-            uint inputId = 1;
-            uint outputId = (uint)(pixelCount + 1);
-            uint hiddenId = (uint)(2*pixelCount + 2);
-            double yReal = originPixelXY;
-
-            for(int y=0; y<visualFieldResolution; y++, yReal += pixelSize)
-            {
-                double xReal = originPixelXY;
-                for (int x = 0; x < visualFieldResolution; x++, xReal += pixelSize, inputId++, outputId++, hiddenId++)
-                {
-                    //CJR: I leave the thrid dimintion in,cause I can ignore it when I'm adding inputs to the CPPN
-                    //but use it to dicate what set of outputs to use
-                    inputLayer.NodeList.Add(new SubstrateNode(inputId, new double[] { xReal, yReal, -1.0}));
-                    if ((x % 2 == 0 && y % 2 == 0) || ((x + 1) % 2 == 0 && (y + 1) % 2 == 0))
-                    {
-                        HiddenLayer.NodeList.Add(new SubstrateNode(hiddenId, new double[] { xReal, yReal, 0}));
-                    }
-                    outputLayer.NodeList.Add(new SubstrateNode(outputId, new double[] {xReal, yReal, 1.0}));
-                }
-            }
-
-            List<SubstrateNodeSet> nodeSetList = new List<SubstrateNodeSet>(3);
-            nodeSetList.Add(inputLayer);
-            nodeSetList.Add(outputLayer);
-            nodeSetList.Add(HiddenLayer);
-
-            //CJR: Fist and second layer must be input/output respectively to be validated by the substrate, so hidden is third
-            // Define connection mappings between layers/sets.
-            List<NodeSetMapping> nodeSetMappingList = new List<NodeSetMapping>(3);
-            nodeSetMappingList.Add(NodeSetMapping.Create(0, 2,(double?)null));
-            nodeSetMappingList.Add(NodeSetMapping.Create(2, 1, (double?)null));
-
-            // Construct substrate.
-            Substrate substrate = new Substrate(nodeSetList, DefaultActivationFunctionLibrary.CreateLibraryNeat(SteepenedSigmoid.__DefaultInstance), 0, 0.2, 5, nodeSetMappingList);
-
-            // Create genome decoder. Decodes to a neural network packaged with an activation scheme that defines a fixed number of activations per evaluation.
-            IGenomeDecoder<NeatGenome,IBlackBox> genomeDecoder = new HyperNeatDecoder(substrate, _activationSchemeCppn, _activationScheme, lengthCppnInput);
-            return genomeDecoder;
+            return GenomeHelper.CreateGenomeDecoder(visualFieldResolution, lengthCppnInput);
         }
 
         #endregion
