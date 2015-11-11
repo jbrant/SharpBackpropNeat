@@ -164,6 +164,10 @@
     <Compile Include="Xor\XorExperiment.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharpNeatLibTests\SharpNeatLibTests.csproj">
+      <Project>{db0995eb-55c4-4cdc-8466-b088d2395f03}</Project>
+      <Name>SharpNeatLibTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpNeatLib\SharpNeatLib.csproj">
       <Project>{ABC5C77A-DEBA-420C-926C-BD3E6F37AE15}</Project>
       <Name>SharpNeatLib</Name>
