@@ -48,6 +48,7 @@ namespace SharpNeatConsole
         private static EvolvedAutoEncoderHyperNeatExperiment _autoencoderExperiment;
         private static XmlWriterSettings _xwSettings;
         private static StreamWriter _logFileWriter;
+        private static uint _curGenerationUpdate;
 
         private static void Main(string[] args)
         {
@@ -86,10 +87,10 @@ namespace SharpNeatConsole
 
             for (int curRun = 0; curRun < numRuns; curRun++)
             {
-                _logFilesBaseName += "_Run" + (curRun + 1) + '_';
+                string runBaseLogFileName = _logFilesBaseName + "_Run" + (curRun + 1) + '_';
 
                 // Confiure log file writer
-                string logFilename = _logFilesBaseName + '_' + DateTime.Now.ToString("yyyyMMdd") + ".log";
+                string logFilename = runBaseLogFileName + '_' + DateTime.Now.ToString("yyyyMMdd") + ".log";
                 _logFileWriter = new StreamWriter(logFilename, true);
                 _logFileWriter.WriteLine(
                     "ClockTime,Gen,BestFitness,MeanFitness,MeanSpecieChampFitness,ChampComplexity,MeanComplexity,MaxComplexity,TotalEvaluationCount,EvaluationsPerSec,SearchMode");
@@ -106,13 +107,16 @@ namespace SharpNeatConsole
                 _ea = _autoencoderExperiment.CreateEvolutionAlgorithm(_genomeFactory, _genomeList);
                 _ea.UpdateEvent += ea_UpdateEvent;
 
+                // Set the current generation
+                _curGenerationUpdate = 0;
+
                 // Start algorithm (it will run on a background thread).
                 _ea.StartContinue();
 
                 while (RunState.Terminated != _ea.RunState && RunState.Paused != _ea.RunState &&
                        _ea.CurrentGeneration < maxGenerations)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10000);
                 }
             }
         }
@@ -121,23 +125,30 @@ namespace SharpNeatConsole
         {
             Console.WriteLine("gen={0:N0} bestFitness={1:N6}", _ea.CurrentGeneration, _ea.Statistics._maxFitness);
 
-            // Derive best genome filename
-            string bestGenomeFile = string.Format(_filenameNumberFormatter, "{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
-                _logFilesBaseName, _ea.CurrentChampGenome.EvaluationInfo.Fitness, DateTime.Now);
-
-            // Save genome to xml file.
-            using (XmlWriter xw = XmlWriter.Create(bestGenomeFile, _xwSettings))
+            if (_ea.CurrentGeneration > _curGenerationUpdate)
             {
-                _autoencoderExperiment.SavePopulation(xw, new[] {_ea.CurrentChampGenome});
-            }
+                // Derive best genome filename
+                string bestGenomeFile = string.Format(_filenameNumberFormatter,
+                    "{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
+                    _logFilesBaseName, _ea.CurrentChampGenome.EvaluationInfo.Fitness, DateTime.Now);
 
-            // Write statistics
-            _logFileWriter.WriteLine("{0:yyyy-MM-dd HH:mm:ss.fff},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",
-                DateTime.Now, _ea.Statistics._generation, _ea.Statistics._maxFitness, _ea.Statistics._meanFitness,
-                _ea.Statistics._meanSpecieChampFitness, _ea.CurrentChampGenome.Complexity,
-                _ea.Statistics._meanComplexity, _ea.Statistics._maxComplexity, _ea.Statistics._totalEvaluationCount,
-                _ea.Statistics._evaluationsPerSec, _ea.ComplexityRegulationMode);
-            _logFileWriter.Flush();
+                // Save genome to xml file.
+                using (XmlWriter xw = XmlWriter.Create(bestGenomeFile, _xwSettings))
+                {
+                    _autoencoderExperiment.SavePopulation(xw, new[] {_ea.CurrentChampGenome});
+                }
+
+                // Write statistics
+                _logFileWriter.WriteLine("{0:yyyy-MM-dd HH:mm:ss.fff},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",
+                    DateTime.Now, _ea.Statistics._generation, _ea.Statistics._maxFitness, _ea.Statistics._meanFitness,
+                    _ea.Statistics._meanSpecieChampFitness, _ea.CurrentChampGenome.Complexity,
+                    _ea.Statistics._meanComplexity, _ea.Statistics._maxComplexity, _ea.Statistics._totalEvaluationCount,
+                    _ea.Statistics._evaluationsPerSec, _ea.ComplexityRegulationMode);
+                _logFileWriter.Flush();
+
+                // Update current update generation
+                _curGenerationUpdate = _ea.CurrentGeneration;
+            }
         }
     }
 }
