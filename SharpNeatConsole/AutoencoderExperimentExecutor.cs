@@ -21,12 +21,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Xml;
 using log4net.Config;
+using SharpNeat;
 using SharpNeat.Core;
 using SharpNeat.Domains.EvolvedAutoEncoderHyperNeat;
 using SharpNeat.Genomes.Neat;
@@ -51,8 +51,12 @@ namespace SharpNeatConsole
 
         private static void Main(string[] args)
         {
-            Debug.Assert(args != null && args.Length == 5,
-                "Invocation of the form: sharpneatconsole {experiment configuration file} {population seed file} {number of runs} {max generations} {log files base name}");
+            if (args == null || args.Length != 5)
+            {
+                Console.Error.WriteLine(
+                    "Invocation of the form: sharpneatconsole {experiment configuration file} {population seed file} {number of runs} {max generations} {log files base name}");
+                throw new SharpNeatException("Malformed invocation.");
+            }
 
             // Read in experiment configuration file
             string experimentConfigurationFile = args[0];
@@ -71,7 +75,7 @@ namespace SharpNeatConsole
             // Configure XML writer
             _xwSettings = new XmlWriterSettings();
             _xwSettings.Indent = true;
-            
+
             // Initialize experiment
             _autoencoderExperiment = new EvolvedAutoEncoderHyperNeatExperiment();
 
@@ -82,7 +86,7 @@ namespace SharpNeatConsole
 
             for (int curRun = 0; curRun < numRuns; curRun++)
             {
-                _logFilesBaseName += "_Run" + (curRun + 1).ToString() + '_';
+                _logFilesBaseName += "_Run" + (curRun + 1) + '_';
 
                 // Confiure log file writer
                 string logFilename = _logFilesBaseName + '_' + DateTime.Now.ToString("yyyyMMdd") + ".log";
