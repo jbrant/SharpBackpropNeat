@@ -301,7 +301,7 @@ namespace SharpNeatConsole
         private static readonly int _imageSampleCount = 150;
         private static readonly int _resolutionReduction = 1;
         private static readonly double _trainingSampleProportion = 0.8;
-        private static readonly int _numBackpropIterations = 5;
+        private static readonly int _numBackpropIterations = 100;
         private static readonly int _learningRate = 1;
         private static readonly string _imageOutputDirectoryBaseName = "ImageOutput";
 
