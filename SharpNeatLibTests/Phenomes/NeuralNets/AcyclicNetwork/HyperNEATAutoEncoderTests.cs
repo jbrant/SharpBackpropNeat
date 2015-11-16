@@ -21,7 +21,8 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
     [TestClass]
     public class HyperNEATAutoEncoderTests
     {
-        private const string _genomeFileIn = "/Resources/CPPNS/NewToTest.gnm.xml";
+        //private const string _genomeFileIn = "/Resources/CPPNS/NewToTest.gnm.xml";
+        private const string _genomeFileIn = "/Resources/champ_98,65_20151111_002113.gnm.xml";
         private const string _genomeFileOut = "/Resources/CPPNS/Out/champ_77,22_20151013_143931.gnm.xml";
         private const string _substrateFileOut = "/Resources/CPPNS/Out/substrate.gnm.xml";
         private string _inputFilePath;
@@ -32,7 +33,7 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
         private int _inputNeuronCount = 7;
         private int _outpurNeuronCount = 6;
         private double _learningRate = 1;
-        private string _trainingImagesPath = @"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data";
+        private string _trainingImagesPath = @"F:\User Data\Jonathan\Documents\school\Jonathan\Graduate\PhD\Development\C# NEAT\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data";
 
         [TestInitialize]
         public void SetupTest()
@@ -85,7 +86,8 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
                 //System.Diagnostics.Debug.WriteLine((maxFitness - errorSum) / maxFitness * 100);
                 if (loopNum / 10 == 0 || i % (loopNum/10) == 0)
                 {
-                    ImageIoUtils.WriteImage(@"DataBPOut/Example" + (i) + ".bmp", phenome.OutputSignalArray);
+                    //ImageIoUtils.WriteImage(@"DataBPOut/Example" + (i) + ".bmp", phenome.OutputSignalArray);
+                    ImageIoUtils.WriteImage(@"Example" + (i) + ".bmp", phenome.OutputSignalArray);
                     System.Diagnostics.Debug.WriteLine("\n" + i + "Error: " + errorSum);
                 }
                 double newError = phenome.CalculateError(_learningRate) * 100000;
@@ -105,8 +107,8 @@ namespace SharpNeat.Phenomes.NeuralNets.Tests
            // SaveUpdatedVersionOfEachImage(@"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data",
            //     visualFieldResolution: 28, numImageSamples: 50, reduceAmountPerSide: 2, trainingSampleProportion: .8, numBackpropIterations: 100, learningRate: 1);
 
-            RunBPUntilThresholdIsPassedThenSave(@"C:\Users\Christopher\Documents\GitHub\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data",
-                visualFieldResolution: 28, numImageSamples: 100, reduceAmountPerSide: 4, trainingSampleProportion: .8, numBackpropIterations: 100, learningRate: 1, leavingThreshold: 10);
+            RunBPUntilThresholdIsPassedThenSave(@"F:\User Data\Jonathan\Documents\school\Jonathan\Graduate\PhD\Development\C# NEAT\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number5Samples.data",
+                visualFieldResolution: 28, numImageSamples: 100, reduceAmountPerSide: 1, trainingSampleProportion: .8, numBackpropIterations: 100, learningRate: 1, leavingThreshold: 10);
         }
 
         /// <summary>

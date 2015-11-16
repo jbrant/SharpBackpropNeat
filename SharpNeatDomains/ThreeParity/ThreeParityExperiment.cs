@@ -229,7 +229,7 @@ namespace SharpNeat.Domains.ThreeParity
                 SelectiveGenomeFitnessEvaluator<NeatGenome>.CreatePredicate_OnceOnly());
 
             // Initialize the evolution algorithm.
-            ea.Initialize(selectiveFitnessEvaluator, genomeFactory, genomeList);
+            ea.Initialize(selectiveFitnessEvaluator, genomeFactory, genomeList, null);
 
             // Finished. Return the evolution algorithm
             return ea;

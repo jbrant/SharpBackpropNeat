@@ -65,35 +65,7 @@
     <Compile Include="Box2D\OpenGLDebugDraw.cs" />
     <Compile Include="Box2D\SimulationParameters.cs" />
     <Compile Include="Box2D\SimulationWorld.cs" />
-    <Compile Include="SinglePoleBalancingSwingUp\SinglePoleBalancingSwingUpEvaluator.cs" />
-    <Compile Include="SinglePoleBalancingSwingUp\SinglePoleBalancingSwingUpExperiment.cs" />
-    <Compile Include="SinglePoleBalancingSwingUp\SinglePoleBalancingSwingUpView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="InvertedDoublePendulum\InvertedDoublePendulumWorld.cs" />
-    <Compile Include="InvertedDoublePendulum\InvertedDoublePendulumEvaluator.cs" />
-    <Compile Include="InvertedDoublePendulum\InvertedDoublePendulumExperiment.cs" />
-    <Compile Include="InvertedDoublePendulum\InvertedDoublePendulumView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SinglePoleBalancingBox2d\SinglePoleBalancingBox2dEvaluator.cs" />
-    <Compile Include="SinglePoleBalancingBox2d\SinglePoleBalancingBox2dExperiment.cs" />
-    <Compile Include="SinglePoleBalancingBox2d\SinglePoleBalancingBox2dView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SinglePoleBalancingBox2d\SinglePoleBalancingWorld.cs" />
-    <Compile Include="WalkerBox2d\WalkerBox2dExperimentHyperNeat.cs" />
-    <Compile Include="WalkerBox2d\LegInterface.cs" />
-    <Compile Include="WalkerBox2d\NeuralNetController.cs" />
-    <Compile Include="WalkerBox2d\WalkerBox2dView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WalkerBox2d\WalkerBox2dExperiment.cs" />
-    <Compile Include="WalkerBox2d\WalkerBox2dEvaluator.cs" />
-    <Compile Include="WalkerBox2d\WalkerController.cs" />
-    <Compile Include="WalkerBox2d\WalkerInterface.cs" />
-    <Compile Include="WalkerBox2d\WalkerWorld.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
@@ -101,7 +73,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="SinglePoleBalancingBox2d\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpNeatDomains\SharpNeatDomains.csproj">

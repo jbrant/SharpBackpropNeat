@@ -36,6 +36,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
         private double _trainingSampleProportion;
         private int _resolutionReductionPerSide; 
         private int _numInitialHiddenNodes;
+        private int _maxGenerations;
 
         #endregion
 
@@ -117,7 +118,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
             _learningRate = XmlUtils.GetValueAsDouble(xmlConfig, "LearningRate");
             _numBackpropIterations = XmlUtils.GetValueAsInt(xmlConfig, "NumBackpropagationIterations");
             _trainingSampleProportion = XmlUtils.GetValueAsDouble(xmlConfig, "TrainingSampleProportion");
-
+            _maxGenerations = XmlUtils.GetValueAsInt(xmlConfig, "MaxGenerations");
         }
 
         /// <summary>
@@ -244,7 +245,7 @@ namespace SharpNeat.Domains.EvolvedAutoencoder
 
             
             // Initialize the evolution algorithm
-            ea.Initialize(selectiveFitnessEvaluator, genomeFactory, genomeList);
+            ea.Initialize(selectiveFitnessEvaluator, genomeFactory, genomeList, _maxGenerations);
 
             // Finished. Return the evolution algorithm
             return ea;

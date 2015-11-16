@@ -313,9 +313,10 @@ namespace SharpNeat.EvolutionAlgorithms
         public override void Initialize(IGenomeEvaluator<TGenome> genomeFitnessEvaluator,
             IGenomeFactory<TGenome> genomeFactory,
             List<TGenome> genomeList,
+            int? maxGenerations,
             AbstractNoveltyArchive<TGenome> abstractNoveltyArchive = null)
         {
-            base.Initialize(genomeFitnessEvaluator, genomeFactory, genomeList, abstractNoveltyArchive);
+            base.Initialize(genomeFitnessEvaluator, genomeFactory, genomeList, maxGenerations, abstractNoveltyArchive);
             Initialize();
         }
 
@@ -333,9 +334,10 @@ namespace SharpNeat.EvolutionAlgorithms
         public override void Initialize(IGenomeEvaluator<TGenome> genomeFitnessEvaluator,
             IGenomeFactory<TGenome> genomeFactory,
             int populationSize,
+            int? maxGenerations,
             AbstractNoveltyArchive<TGenome> abstractNoveltyArchive = null)
         {
-            base.Initialize(genomeFitnessEvaluator, genomeFactory, populationSize, abstractNoveltyArchive);
+            base.Initialize(genomeFitnessEvaluator, genomeFactory, populationSize, maxGenerations, abstractNoveltyArchive);
             Initialize();
         }
 

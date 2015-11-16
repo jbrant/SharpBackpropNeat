@@ -16,15 +16,16 @@
   <Resolution>28</Resolution>
   <ResolutionReductionPerSide>4</ResolutionReductionPerSide>
   <GenomeConfig>
-    <InitialConnectionProportion>.3</InitialConnectionProportion>
+    <InitialConnectionProportion>0.5</InitialConnectionProportion>
     <WeightMutationProbability>.9</WeightMutationProbability>
     <AddConnnectionProbability>0.1</AddConnnectionProbability>
     <AddNodeProbability>.1</AddNodeProbability>
   </GenomeConfig>
-  <TrainingImages>F:\User Data\Jonathan\Documents\school\Jonathan\Graduate\PhD\Development\C# NEAT\SharpBackpropNeat\SharpNeatDomains\EvolvedAutoencoder\ImageData\Number1Samples.data</TrainingImages>
+  <TrainingImages>.\ImageData\Number1Samples.data</TrainingImages>
   <NumImageSamples>100</NumImageSamples>
-  <LearningRate>1</LearningRate>
-  <NumBackpropagationIterations>50</NumBackpropagationIterations>
+  <MaxGenerations>50</MaxGenerations>
+  <LearningRate>5</LearningRate>
+  <NumBackpropagationIterations>100</NumBackpropagationIterations>
   <TrainingSampleProportion>0.8</TrainingSampleProportion>
   <Description>
     CAP 6616, generating an Autoencoder with HyperNEAT

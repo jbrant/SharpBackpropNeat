@@ -75,6 +75,7 @@
     <Content Include="Resources\5Out5In.gnm.xml" />
     <Content Include="Resources\BestGenome9600.gnm.xml" />
     <Content Include="Resources\champ_77,22_20151013_143931.gnm.xml" />
+    <Content Include="Resources\champ_98,65_20151111_002113.gnm.xml" />
     <Content Include="Resources\Genome_99_35.gnm.xml" />
     <Content Include="Resources\NewToTest.gnm.xml" />
     <Content Include="Resources\Only5iterationsofBP.gnm.xml" />
